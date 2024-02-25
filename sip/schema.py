@@ -29,6 +29,7 @@ class Page(BaseModel):
     show_kwargs: Optional[dict[str, Any]] = dict()
 
 
+    # todo: update authentication details
     def __call__(self) -> Any:
         if self.title is not None:
             st.markdown(f"# {self.title}")
