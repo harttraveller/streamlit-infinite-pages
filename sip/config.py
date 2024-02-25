@@ -98,4 +98,13 @@ class AppConfig:
             raise ValueError(f"'custom_logo' must be a .png file")
         return custom_logo
 
+    @field_validator("custom_css")
+    def __validate_custom_css(cls, custom_css: str | Path) -> Path:
+        custom_css = Path(custom_css)
+        if not custom_css.exists():
+            raise FileNotFoundError(f"'custom_css' not found at: {str(custom_css)}")
+        if not str(custom_css).endswith(".css"):
+            raise ValueError(f"'custom_css' must be a .css file")
+        return custom_css
+
     def __post_init__(self) -> None: ...
