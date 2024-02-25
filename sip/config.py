@@ -107,4 +107,13 @@ class AppConfig:
             raise ValueError(f"'custom_css' must be a .css file")
         return custom_css
 
+    @field_validator("custom_js")
+    def __validate_custom_js(cls, custom_js: str | Path) -> Path:
+        custom_js = Path(custom_js)
+        if not custom_js.exists():
+            raise FileNotFoundError(f"'custom_js' not found at: {str(custom_js)}")
+        if not str(custom_js).endswith(".js"):
+            raise ValueError(f"'custom_js' must be a .js file")
+        return custom_js
+
     def __post_init__(self) -> None: ...
