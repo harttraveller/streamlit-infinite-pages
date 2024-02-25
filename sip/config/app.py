@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from sip.constant import path_default_logo, path_default_theme
+from sip.env import path_default_logo, path_default_theme
 from sip.config.streamlit import (
     StreamlitConfig,
     LoggerConfig,

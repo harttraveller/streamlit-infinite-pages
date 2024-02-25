@@ -27,7 +27,7 @@ import toml
 from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel, field_validator
-from sip.constant import (
+from sip.env import (
     path_streamlit,
     path_streamlit_config,
     path_streamlit_credentials,

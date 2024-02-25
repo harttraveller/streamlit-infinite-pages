@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 from sip.config.streamlit import skip_streamlit_newsletter_request
-from sip.constant import run_mode_environment_key
+from sip.env import run_mode_environment_key
 
 
 def start(

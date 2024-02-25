@@ -4,7 +4,7 @@ from streamlit.delta_generator import DeltaGenerator
 from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from sip.config.app import AppConfig
-from sip.constant import run_mode_environment_key
+from sip.env import run_mode_environment_key
 
 
 def default_unauthorized(*args, **kwargs) -> None:
