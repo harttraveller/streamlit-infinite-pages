@@ -5,6 +5,7 @@ from loguru import logger as log
 from sip.utility import undefined_page_callable
 
 class Page(BaseModel):
+    # todo: finish docstring
     """
     _summary_
 
