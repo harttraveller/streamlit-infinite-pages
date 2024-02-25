@@ -3,7 +3,7 @@ import sys
 import subprocess
 from pathlib import Path
 from typing import Optional
-from sip.utils.st_config import skip_streamlit_newsletter_request
+from sip.config.streamlit import skip_streamlit_newsletter_request
 from sip.constant import run_mode_environment_key
 
 
