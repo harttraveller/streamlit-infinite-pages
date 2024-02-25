@@ -1,5 +1,4 @@
 import toml
-from pathlib import Path
 from sip.constant import path_streamlit, path_streamlit_credentials
 
 
