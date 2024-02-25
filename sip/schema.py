@@ -5,10 +5,21 @@ from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from sip.constant import path_default_logo, path_default_theme
+from sip.utils.st_config import (
+    StreamlitConfig,
+    LoggerConfig,
+    ClientConfig,
+    RunnerConfig,
+    ServerConfig,
+    BrowserConfig,
+    UserInterfaceConfig,
+    ThemeConfig,
+)
 
 
 @dataclass
 class AppConfig:
+    # main configuration parameters
     app_name: str = "Streamlit Infinite Pages"  # ! unvalidated
     app_icon: str = "📚"  # * validated
     page_layout: str = "wide"  # * validated
@@ -19,8 +30,32 @@ class AppConfig:
     initial_session_state: Optional[dict[str, Any]] = dict()
     authorization_function: Optional[Callable[[Optional[Any]], bool]] = None
     alpha_sort_pages: bool = False
-    disable_traceback: bool = False
+    disable_error_traceback: bool = False
     custom_error_handler: Optional[Callable] = None
+    # .streamlit/config.toml configuration parameters
+    st_cfg_logger_level: str = "info"
+    st_cfg_logger_enable_rich: bool = True
+    st_cfg_client_show_error_details: bool = True
+    st_cfg_client_toolbar_mode: str = "minimal"
+    st_cfg_runner_magic_enabled: bool = False
+    st_cfg_runner_post_script_garbage_collection: bool = False
+    st_cfg_runner_fast_reruns: bool = True
+    st_cfg_server_run_on_save: bool = True
+    st_cfg_server_allow_run_on_save: bool = True
+    st_cfg_server_address: str = "localhost"
+    st_cfg_server_port: int = 8501
+    st_cfg_server_enable_cors: bool = True
+    st_cfg_server_enable_xsrf_protection: bool = True
+    st_cfg_server_max_upload_size_mb: int = 200
+    st_cfg_server_max_message_size_mb: int = 200
+    st_cfg_browser_gather_usage_stats: bool = False
+    st_cfg_ui_hide_top_bar: bool = True
+    st_cfg_theme_base: str = "dark"
+    st_cfg_theme_primary_color: str = ""
+    st_cfg_theme_background_color: str = ""
+    st_cfg_theme_secondary_background_color: str = ""
+    st_cfg_theme_text_color: str = ""
+    st_cfg_theme_font: str = ""
 
     @field_validator("app_icon")
     def __validate_app_icon(cls, app_icon: str) -> str:
