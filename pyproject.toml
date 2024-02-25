@@ -11,6 +11,7 @@ include = ["sip/.assets/**/*"]
 [tool.poetry.dependencies]
 python = "^3.10"
 rich-click = "^1.7.3"
+streamlit = "^1.31.1"
 
 [build-system]
 requires = ["poetry-core"]
