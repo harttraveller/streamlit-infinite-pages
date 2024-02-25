@@ -14,6 +14,8 @@ from sip.config.streamlit import (
     ThemeConfig,
 )
 
+# todo: add keyboard shortcut customization
+
 
 @dataclass
 class AppConfig:
