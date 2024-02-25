@@ -55,10 +55,10 @@ class PageConfig:
 
 @dataclass
 class AppConfig:
-    app_name: str = "Streamlit Infinite Pages"
-    app_icon: str = "📚"
-    page_layout: str = "wide"
-    initial_sidebar_state: str = "expanded"
+    app_name: str = "Streamlit Infinite Pages"  # ! unvalidated
+    app_icon: str = "📚"  # * validated
+    page_layout: str = "wide"  # * validated
+    initial_sidebar_state: str = "expanded"  # * validated
     custom_logo: str | Path = path_default_logo
     custom_css: Optional[str | Path] = path_default_theme
     custom_js: Optional[str | Path] = None
@@ -68,9 +68,25 @@ class AppConfig:
     disable_traceback: bool = False
 
     @field_validator("app_icon")
-    def __validate_page_icon(cls, app_icon: str) -> str:
+    def __validate_app_icon(cls, app_icon: str) -> str:
         if len(app_icon) > 1:
             raise ValueError("'app_icon' must be one character long")
         return app_icon
+
+    @field_validator("page_layout")
+    def __validate_page_layout(cls, page_layout: str) -> str:
+        valid_page_layouts = {"wide", "centered"}
+        if page_layout not in valid_page_layouts:
+            raise ValueError(f"'page_layout' must be one of {valid_page_layouts}")
+        return page_layout
+
+    @field_validator("initial_sidebar_state")
+    def __validate_initial_sidebar_state(cls, initial_sidebar_state: str) -> str:
+        valid_initial_sidebar_states = {"expanded", "collapsed", "auto"}
+        if initial_sidebar_state not in valid_initial_sidebar_states:
+            raise ValueError(
+                f"'initial_sidebar_state' must be one of {valid_initial_sidebar_states}"
+            )
+        return initial_sidebar_state
 
     def __post_init__(self) -> None: ...
