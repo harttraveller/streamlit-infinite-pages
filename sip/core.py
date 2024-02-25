@@ -65,6 +65,10 @@ class App:
 
     def add(self, page: Page) -> None: ...
 
+    # def __set_page_config(self) -> None:
+    #     st.set_page_config(
+    #         page_title=self.app
+    #     )
     def build(self) -> None:
         run_mode: str | None = os.getenv(run_mode_environment_key)
         if run_mode is None:
