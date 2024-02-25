@@ -54,3 +54,4 @@ class App(BaseModel):
     browser_window_title: str
     browser_window_icon: str
     wide_page_layout: Optional[bool] = True
+    initial_sidebar_state: Optional[str] = "expanded"
