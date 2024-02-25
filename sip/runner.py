@@ -9,8 +9,8 @@ from sip.constant import run_mode_environment_key
 
 def start(
     entry_script: str | Path,
+    run_mode: str,
     open_browser: bool = False,
-    run_mode: Optional[str] = None,
     host_address: Optional[str] = None,
     host_port: Optional[int] = None,
 ) -> None:
