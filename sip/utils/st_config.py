@@ -503,3 +503,14 @@ class StreamlitConfig(BaseModel):
     mapbox: MapboxConfig = MapboxConfig()
     deprecation: DeprecationConfig = DeprecationConfig()
     theme: ThemeConfig = ThemeConfig()
+
+    def save(
+        self, path: str | Path = path_streamlit_config, overwrite: bool = False
+    ) -> None:
+        if isinstance(path, str):
+            path = Path(path)
+        if path.exists() and not overwrite:
+            raise FileExistsError(str(path))
+        with open(path, "w") as file:
+            toml.dump(self.model_dump(), file)
+        file.close()
