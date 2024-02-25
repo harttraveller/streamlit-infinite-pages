@@ -15,3 +15,7 @@ path_default_logo: Path = path_assets / "default_logo.png"
 # Variables
 
 run_mode_environment_key: str = "SIP_RUN_MODE"
+required_session_state_keys: set[str] = {
+    "custom_css",
+    "custom_js",
+}
