@@ -1,57 +1,38 @@
+import os
 import sys
 import subprocess
 from pathlib import Path
 from typing import Optional
 from pathlib import Path
+from sip.constant import run_mode_environment_key
 
 
-def make_app_start_command(
-    app: str | Path,
-    host: str,
-    port: int,
-    browser: bool,
-    global_development_mode: bool,
-    suppress_deprecation_warnings: bool,
-    enable_rich: bool,
-    show_error_details: bool,
-    tool_bar_mode: str,
-    run_on_save: bool,
-    allow_run_on_save: bool,
-    enable_cors: bool = True,
-    enable_xsrf_protection: bool = True,
-    ui_hide_top_bar: bool = True,
-    theme_base: str = "dark",
-    theme_primary_color: str = "#4b77ff",
-    theme_background_color: str = "black",
-    theme_secondary_background_color: str = "#191e29",
-) -> list[str]:
-    # todo: adjust options for dev/prod mode
-    return [
+def start(
+    entry_script: str | Path,
+    open_browser: bool = False,
+    run_mode: Optional[str] = None,
+    host_address: Optional[str] = None,
+    host_port: Optional[int] = None,
+) -> None:
+    entry_absolute = Path(entry_script).absolute()
+    if not entry_absolute.exists():
+        raise FileNotFoundError(str(entry_absolute))
+    if run_mode is not None:
+        os.environ[run_mode_environment_key] = run_mode
+    command: list[str] = [
         sys.executable,
         "-m",
         "streamlit",
         "run",
-        app,
-        f"--global.developmentMode={str(global_development_mode)}",
-        f"--global.suppressDeprecationWarnings={str(suppress_deprecation_warnings)}",
-        f"--logger.enableRich={str(enable_rich)}",
-        f"--client.showErrorDetails={str(show_error_details)}",
-        f"--client.toolbarMode={str(tool_bar_mode)}",
-        "--runner.magicEnabled=False",
-        f"--server.headless={str(not browser)}",
-        f"--server.runOnSave={str(run_on_save)}",
-        f"--server.allowRunOnSave={str(allow_run_on_save)}",
-        f"--server.enableCORS={str(enable_cors)}",
-        f"--server.enableXsrfProtection={str(enable_xsrf_protection)}",
-        "--browser.gatherUsageStats=False",
-        f"--theme.base={str(theme_base)}",
-        f"--theme.primaryColor={str(theme_primary_color)}",
-        f"--ui.hideTopBar={str(ui_hide_top_bar)}",
-        f"--server.address={host}",
-        f"--server.port={str(port)}",
-        f"--theme.backgroundColor={str(theme_background_color)}",
-        f"--theme.secondaryBackgroundColor={str(theme_secondary_background_color)}",
+        str(entry_absolute),
+        f"--server.headless={str(not open_browser)}",
     ]
-
-
-def start(entry_script: str | Path, mode: Optional[str]) -> None: ...
+    if host_address is not None:
+        command.append(
+            f"--server.address={host_address}",
+        )
+    if host_port is not None:
+        command.append(
+            f"--server.port={str(host_port)}",
+        )
+    subprocess.run(command)
