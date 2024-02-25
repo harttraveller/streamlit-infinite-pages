@@ -9,8 +9,8 @@ class Page(BaseModel):
     _summary_
 
     Args:
-        id (str): _description_
-        title (Optional[str]): _description_. Defaults to None.
+        id (str): The unique page identifier.
+        title (Optional[str]): The page title to display as Heading 1 on page. Defaults to None.
         main (Optional[Callable]): _description_. Defaults to 'undefined_page_callable'.
         main_args (Optional[list[Any]]): _description_. Defaults to empty list.
         main_kwargs (Optional[dict[str, Any]]): _description_. Defaults to empty dictionary.
@@ -30,7 +30,7 @@ class Page(BaseModel):
 
     def __call__(self) -> Any:
         if self.title is not None:
-            st.markdown(f"# {self.name}")
+            st.markdown(f"# {self.title}")
         if self.show is None:
             log.info(
                 f"[{st.session_state['email']}] render page, non-restricted: {self.name}"
