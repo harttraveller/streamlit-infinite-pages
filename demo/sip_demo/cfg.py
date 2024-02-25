@@ -1,4 +1,4 @@
-from sip.core.config import AppConfig
+from sip.config.app import AppConfig
 
 
 dev_app_config = AppConfig()
