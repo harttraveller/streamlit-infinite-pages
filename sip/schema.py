@@ -51,5 +51,6 @@ class Page(BaseModel):
                 st.error("**Error: You do not have authorization to access this page.**")
 
 class App(BaseModel):
-    window_title: str
-    window_icon: str
+    browser_window_title: str
+    browser_window_icon: str
+    wide_page_layout: Optional[bool] = True
