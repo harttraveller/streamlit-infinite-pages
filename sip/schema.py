@@ -23,24 +23,28 @@ class Page(BaseModel):
     """
     id: str
     title: Optional[str] = None
-    main: Optional[Callable[[Optional[Any]], None]] = utility.undefined_page_callable
+    main: Optional[Callable[[Optional[Any]], None]] = None
     main_args: Optional[list[Any]] = list()
     main_kwargs: Optional[dict[str, Any]] = dict()
     show: Optional[Callable[[Optional[Any]], bool]] = None
     show_args: Optional[list[Any]] = list()
     show_kwargs: Optional[dict[str, Any]] = dict()
     unauthorized_message: str = constant.default_unauthorized_message
+    undeveloped_message: str = constant.default_undeveloped_messaged
 
     def __call__(self) -> Any:
         if self.title is not None:
             st.markdown(f"# {self.title}")
-        if self.show is None:
-            self.main(*self.main_args, **self.main_kwargs)
+        if self.main is None:
+            st.error(self.undeveloped_message)
         else:
-            if self.show(*self.show_args, **self.show_kwargs):
+            if self.show is None:
                 self.main(*self.main_args, **self.main_kwargs)
             else:
-                st.error(self.unauthorized_message)
+                if self.show(*self.show_args, **self.show_kwargs):
+                    self.main(*self.main_args, **self.main_kwargs)
+                else:
+                    st.error(self.unauthorized_message)
 
 class App(BaseModel):
     app_name: str = "Streamlit Infinite Pages"
