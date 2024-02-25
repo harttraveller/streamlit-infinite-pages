@@ -101,10 +101,12 @@ class LoggerConfig(BaseModel):
     messageFormat: str = "%(asctime)s %(message)s"
     enableRich: bool = False  # * hidden option: use `streamlit run --help`
 
+    @field_validator("level")
     def __validate_level(cls, level: str) -> str:
-        valid_level_options: list[str] = {"error", "warning", "info", "debug"}
+        valid_level_options: set[str] = {"error", "warning", "info", "debug"}
         if level not in valid_level_options:
             raise ValueError(f"'level' must be one of {valid_level_options}")
+        return level
 
 
 class ClientConfig(BaseModel):
@@ -154,9 +156,10 @@ class ClientConfig(BaseModel):
 
     @field_validator("toolbarMode")
     def __validate_toolbarMode(cls, toolbarMode: str) -> str:
-        valid_toolbarMode_options: list[str] = {"auto", "developer", "viewer", "minimal"}
+        valid_toolbarMode_options: set[str] = {"auto", "developer", "viewer", "minimal"}
         if toolbarMode not in valid_toolbarMode_options:
             raise ValueError(f"'toolbarMode' must be one of {valid_toolbarMode_options}")
+        return toolbarMode
 
 
 class RunnerConfig(BaseModel):
@@ -223,12 +226,14 @@ class RunnerConfig(BaseModel):
     enforceSerializableSessionState: bool = False
     enumCoercion: str = "nameOnly"
 
+    @field_validator("enumCoercion")
     def __validate_enumCoercion(cls, enumCoercion: str) -> str:
-        valid_enumCoercion_options: list[str] = {"nameOnly", "off", "nameAndValue"}
+        valid_enumCoercion_options: set[str] = {"nameOnly", "off", "nameAndValue"}
         if enumCoercion not in valid_enumCoercion_options:
             raise ValueError(
                 f"'enumCoercion' must be one of {valid_enumCoercion_options}"
             )
+        return enumCoercion
 
 
 class ServerConfig(BaseModel):
@@ -362,12 +367,14 @@ class ServerConfig(BaseModel):
     # sslCertfile # ! ignored for security reasons, see docstring
     # sslKeyFile # ! ignored for security reasons, see docstring
 
+    @field_validator("fileWatcherType")
     def __validate_fileWatcherType(cls, fileWatcherType: str) -> str:
-        valid_fileWatcherType_options: list[str] = {"auto", "watchdog", "poll", "none"}
+        valid_fileWatcherType_options: set[str] = {"auto", "watchdog", "poll", "none"}
         if fileWatcherType not in valid_fileWatcherType_options:
             raise ValueError(
                 f"'fileWatcherType' must be one of {valid_fileWatcherType_options}"
             )
+        return fileWatcherType
 
 
 class BrowserConfig(BaseModel):
@@ -478,10 +485,12 @@ class ThemeConfig(BaseModel):
     textColor: Optional[str] = None
     font: Optional[str] = None
 
+    @field_validator("font")
     def __validate_font(cls, font: str) -> str:
-        valid_font_options: list[str] = {"sans serif", "serif", "monospace"}
+        valid_font_options: set[str] = {"sans serif", "serif", "monospace"}
         if font not in valid_font_options:
             raise ValueError(f"'font' must be one of {valid_font_options}")
+        return font
 
 
 class StreamlitConfig(BaseModel):
