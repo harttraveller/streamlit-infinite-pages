@@ -1,15 +1,14 @@
-from pydantic.dataclasses import dataclass
-from typing import Optional
 from sip.schema import AppConfig, Page
+from sip.constant import run_mode_environment_key
 
 
-@dataclass
 class App:
-    config: Optional[AppConfig] = None
-    modes: Optional[dict[str, AppConfig]] = None
 
-    def __post_init__(self) -> None:
-        self.pages = list()
+    def __init__(self, **modes) -> None:
+        for key, val in modes.items():
+            if not isinstance(val, AppConfig):
+                raise ValueError(f"'{key}' must be instance of 'AppConfig'")
+        self.modes = modes
 
     def add(self, page: Page) -> None: ...
 
