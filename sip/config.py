@@ -89,4 +89,13 @@ class AppConfig:
             )
         return initial_sidebar_state
 
+    @field_validator("custom_logo")
+    def __validate_custom_logo(cls, custom_logo: str | Path) -> Path:
+        custom_logo = Path(custom_logo)
+        if not custom_logo.exists():
+            raise FileNotFoundError(f"'custom_logo' not found at: {str(custom_logo)}")
+        if not str(custom_logo).endswith(".png"):
+            raise ValueError(f"'custom_logo' must be a .png file")
+        return custom_logo
+
     def __post_init__(self) -> None: ...
