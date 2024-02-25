@@ -29,28 +29,18 @@ class Page(BaseModel):
     show: Optional[Callable[[Optional[Any]], bool]] = None
     show_args: Optional[list[Any]] = list()
     show_kwargs: Optional[dict[str, Any]] = dict()
+    unauthorized_message: str = constant.default_unauthorized_message
 
-
-    # todo: update authentication details
     def __call__(self) -> Any:
         if self.title is not None:
             st.markdown(f"# {self.title}")
         if self.show is None:
-            log.info(
-                f"[{st.session_state['email']}] render page, non-restricted: {self.title}"
-            )
-            return self.main(*self.main_args, **self.main_kwargs)
+            self.main(*self.main_args, **self.main_kwargs)
         else:
-            if self.show():
-                log.info(
-                    f"[{st.session_state['email']}] render page, restricted: {self.title}"
-                )
-                return self.main(*self.main_args, **self.main_kwargs)
+            if self.show(*self.show_args, **self.show_kwargs):
+                self.main(*self.main_args, **self.main_kwargs)
             else:
-                log.error(
-                    f"[{st.session_state['email']}] unauthorized user attempted to access page: {self.title}"
-                )
-                st.error("**Error: You do not have authorization to access this page.**")
+                st.error(self.unauthorized_message)
 
 class App(BaseModel):
     app_name: str = "Streamlit Infinite Pages"
