@@ -2,7 +2,8 @@ from pathlib import Path
 from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from sip.env import path_default_logo, path_default_theme
+from streamlit.commands.page_config import Layout, InitialSideBarState
+from sip.env import path_default_logo, path_default_theme, required_session_state_keys
 from sip.config.streamlit import (
     StreamlitConfig,
     LoggerConfig,
@@ -21,13 +22,13 @@ from sip.config.streamlit import (
 class AppConfig:
     # main configuration parameters
     app_name: str = "Streamlit Infinite Pages"  # * no validation
-    app_icon: str = "📚"  # * validated
-    page_layout: str = "wide"  # * validated
-    initial_sidebar_state: str = "expanded"  # * validated
-    custom_logo: str | Path = path_default_logo  # * validated
-    custom_css: Optional[str | Path] = path_default_theme  # * validated
-    custom_js: Optional[str | Path] = None  # * validated
-    initial_session_state: Optional[dict[str, Any]] = dict()
+    app_icon: str = "📚"
+    page_layout: Layout = "wide"
+    initial_sidebar_state: InitialSideBarState = "expanded"
+    custom_logo: str | Path = path_default_logo
+    custom_css: Optional[str | Path] = path_default_theme
+    custom_js: Optional[str | Path] = None
+    initial_session_state: dict[str, Any] = dict()
     authorization_function: Optional[Callable[[Optional[Any]], bool]] = None
     alpha_sort_pages: bool = False
     disable_error_traceback: bool = False
@@ -97,8 +98,13 @@ class AppConfig:
             ),
         )
 
+    def __add_required_session_state_keys(self) -> None:
+        for key in required_session_state_keys:
+            self.initial_session_state[key] = None
+
     def __post_init__(self) -> None:
         self.streamlit_config = self.__make_streamlit_config()
+        self.__add_required_session_state_keys()
 
     @field_validator("app_icon")
     def __validate_app_icon(cls, app_icon: str) -> str:
@@ -106,21 +112,21 @@ class AppConfig:
             raise ValueError("'app_icon' must be one character long")
         return app_icon
 
-    @field_validator("page_layout")
-    def __validate_page_layout(cls, page_layout: str) -> str:
-        valid_page_layouts = {"wide", "centered"}
-        if page_layout not in valid_page_layouts:
-            raise ValueError(f"'page_layout' must be one of {valid_page_layouts}")
-        return page_layout
+    # @field_validator("page_layout")
+    # def __validate_page_layout(cls, page_layout: str) -> str:
+    #     valid_page_layouts = {"wide", "centered"}
+    #     if page_layout not in valid_page_layouts:
+    #         raise ValueError(f"'page_layout' must be one of {valid_page_layouts}")
+    #     return page_layout
 
-    @field_validator("initial_sidebar_state")
-    def __validate_initial_sidebar_state(cls, initial_sidebar_state: str) -> str:
-        valid_initial_sidebar_states = {"expanded", "collapsed", "auto"}
-        if initial_sidebar_state not in valid_initial_sidebar_states:
-            raise ValueError(
-                f"'initial_sidebar_state' must be one of {valid_initial_sidebar_states}"
-            )
-        return initial_sidebar_state
+    # @field_validator("initial_sidebar_state")
+    # def __validate_initial_sidebar_state(cls, initial_sidebar_state: str) -> str:
+    #     valid_initial_sidebar_states = {"expanded", "collapsed", "auto"}
+    #     if initial_sidebar_state not in valid_initial_sidebar_states:
+    #         raise ValueError(
+    #             f"'initial_sidebar_state' must be one of {valid_initial_sidebar_states}"
+    #         )
+    #     return initial_sidebar_state
 
     @field_validator("custom_logo")
     def __validate_custom_logo(cls, custom_logo: str | Path) -> Path:
