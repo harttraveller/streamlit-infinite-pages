@@ -15,7 +15,6 @@ class Page(BaseModel):
     show_kwargs: Optional[dict[str, Any]] = dict()
 
 
-    # todo: remove page name, make title optional check
     def __call__(self) -> Any:
         if self.title is not None:
             st.markdown(f"# {self.name}")
