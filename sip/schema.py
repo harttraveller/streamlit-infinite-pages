@@ -20,7 +20,7 @@ from sip.utils.st_config import (
 @dataclass
 class AppConfig:
     # main configuration parameters
-    app_name: str = "Streamlit Infinite Pages"  # ! unvalidated
+    app_name: str = "Streamlit Infinite Pages"  # * no validation
     app_icon: str = "📚"  # * validated
     page_layout: str = "wide"  # * validated
     initial_sidebar_state: str = "expanded"  # * validated
@@ -56,6 +56,49 @@ class AppConfig:
     st_cfg_theme_secondary_background_color: str = ""
     st_cfg_theme_text_color: str = ""
     st_cfg_theme_font: str = ""
+
+    def __make_streamlit_config(self) -> StreamlitConfig:
+        return StreamlitConfig(
+            logger=LoggerConfig(
+                level=self.st_cfg_logger_level,
+                enableRich=self.st_cfg_logger_enable_rich,
+            ),
+            client=ClientConfig(
+                showErrorDetails=self.st_cfg_client_show_error_details,
+                toolbarMode=self.st_cfg_client_toolbar_mode,
+            ),
+            runner=RunnerConfig(
+                magicEnabled=self.st_cfg_runner_magic_enabled,
+                postScriptGC=self.st_cfg_runner_post_script_garbage_collection,
+                fastReruns=self.st_cfg_runner_fast_reruns,
+            ),
+            server=ServerConfig(
+                runOnSave=self.st_cfg_server_run_on_save,
+                allowRunOnSave=self.st_cfg_server_allow_run_on_save,
+                address=self.st_cfg_server_address,
+                port=self.st_cfg_server_port,
+                enableCORS=self.st_cfg_server_enable_cors,
+                enableXsrfProtection=self.st_cfg_server_enable_xsrf_protection,
+                maxUploadSize=self.st_cfg_server_max_upload_size_mb,
+                maxMessageSize=self.st_cfg_server_max_message_size_mb,
+            ),
+            browser=BrowserConfig(
+                gatherUsageStats=self.st_cfg_browser_gather_usage_stats,
+            ),
+            ui=UserInterfaceConfig(
+                hideTopBar=self.st_cfg_ui_hide_top_bar,
+            ),
+            theme=ThemeConfig(
+                base=self.st_cfg_theme_base,
+                primaryColor=self.st_cfg_theme_primary_color,
+                backgroundColor=self.st_cfg_theme_background_color,
+                textColor=self.st_cfg_theme_text_color,
+                font=self.st_cfg_theme_font,
+            ),
+        )
+
+    def __post_init__(self) -> None:
+        self.streamlit_config = self.__make_streamlit_config()
 
     @field_validator("app_icon")
     def __validate_app_icon(cls, app_icon: str) -> str:
@@ -105,8 +148,6 @@ class AppConfig:
         if not str(custom_js).endswith(".js"):
             raise ValueError(f"'custom_js' must be a .js file")
         return custom_js
-
-    def __post_init__(self) -> None: ...
 
 
 @dataclass
