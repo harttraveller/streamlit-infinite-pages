@@ -5,7 +5,7 @@ from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from sip.constant import path_default_logo, path_default_theme
-from sip.utils.st_config import (
+from sip.config.streamlit import (
     StreamlitConfig,
     LoggerConfig,
     ClientConfig,
