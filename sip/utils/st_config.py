@@ -4,6 +4,9 @@ Source: https://docs.streamlit.io/library/advanced-features/configuration
 You can run `streamlit config show` in an environment with streamlit
 installed to see the source of the docstrings.
 
+Additionally, some configuration options are hidden, and the docs can only
+be found by running: `streamlit run --help`.
+
 This file contains pydantic class for streamlit config file, which can be
 modified and easily saved to the ~/.streamlit/config.toml location.
 
@@ -24,7 +27,11 @@ import toml
 from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel, field_validator
-from sip.constant import path_streamlit, path_streamlit_credentials
+from sip.constant import (
+    path_streamlit,
+    path_streamlit_config,
+    path_streamlit_credentials,
+)
 
 
 def skip_streamlit_newsletter_request() -> None:
@@ -60,8 +67,11 @@ class GlobalConfig(BaseModel):
     # showWarningOnDirectExecution = true
     """
 
+    # disableWatchDogWarning: bool = False # ! deprecated
     disableWidgetStateDuplicationWarning: bool = False
     showWarningOnDirectExecution: bool = True
+    # logLevel: str = "info" # ! deprecated
+    unitTest
 
 
 class LoggerConfig(BaseModel):
