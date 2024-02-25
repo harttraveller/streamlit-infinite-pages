@@ -5,10 +5,11 @@ description = "Streamlit app template with minimal theme, keyboard shortcuts, an
 authors = ["Hart Traveller <ruling_fiction.0b@icloud.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{ include = "labs" }]
+include = ["sip/.assets/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-
 
 [build-system]
 requires = ["poetry-core"]
