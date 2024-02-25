@@ -2,12 +2,25 @@ import streamlit as st
 from pydantic import BaseModel
 from typing import Optional, Any, Callable
 from loguru import logger as log
-from sip.utility import default_page_callable
+from sip.utility import undefined_page_callable
 
 class Page(BaseModel):
+    """
+    _summary_
+
+    Args:
+        id (str): _description_
+        title (Optional[str]): _description_. Defaults to None.
+        main (Optional[Callable]): _description_. Defaults to 'undefined_page_callable'.
+        main_args (Optional[list[Any]]): _description_. Defaults to empty list.
+        main_kwargs (Optional[dict[str, Any]]): _description_. Defaults to empty dictionary.
+        show (Optional[Callable]): _description_. Defaults to None.
+        show_args (Optional[list[Any]]): _description_. Defaults to empty list.
+        show_kwargs (Optional[dict[str, Any]]): _description_. Defaults to empty dictionary.
+    """
     id: str
     title: Optional[str] = None
-    main: Optional[Callable] = default_page_callable
+    main: Optional[Callable] = undefined_page_callable
     main_args: Optional[list[Any]] = list()
     main_kwargs: Optional[dict[str, Any]] = dict()
     show: Optional[Callable] = None
