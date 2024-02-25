@@ -3,6 +3,7 @@ import sys
 import subprocess
 from pathlib import Path
 from typing import Optional
+from sip.utils.st_config import skip_streamlit_newsletter_request
 from sip.constant import run_mode_environment_key
 
 
@@ -13,6 +14,7 @@ def start(
     host_address: Optional[str] = None,
     host_port: Optional[int] = None,
 ) -> None:
+    skip_streamlit_newsletter_request()
     entry_absolute = Path(entry_script).absolute()
     if not entry_absolute.exists():
         raise FileNotFoundError(str(entry_absolute))
