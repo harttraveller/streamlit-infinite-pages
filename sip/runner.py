@@ -3,7 +3,6 @@ import sys
 import subprocess
 from pathlib import Path
 from typing import Optional
-from pathlib import Path
 from sip.constant import run_mode_environment_key
 
 
