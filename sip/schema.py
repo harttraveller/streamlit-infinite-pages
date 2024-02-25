@@ -5,6 +5,7 @@ from loguru import logger as log
 from sip.utility import default_page_callable
 
 class Page(BaseModel):
+    id: str
     title: Optional[str] = None
     main: Optional[Callable] = default_page_callable
     main_args: Optional[list[Any]] = list()
@@ -16,7 +17,7 @@ class Page(BaseModel):
 
     # todo: remove page name, make title optional check
     def __call__(self) -> Any:
-        if self.title:
+        if self.title is not None:
             st.markdown(f"# {self.name}")
         if self.show is None:
             log.info(
