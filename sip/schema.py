@@ -1,9 +1,10 @@
 import streamlit as st
+from streamlit.delta_generator import DeltaGenerator
 from pathlib import Path
 from pydantic import BaseModel, field_validator
 from typing import Optional, Any, Callable
 from loguru import logger as log
-from sip.utility import undefined_page_callable
+from sip import constant, utility
 
 class Page(BaseModel):
     # todo: finish docstring
@@ -12,7 +13,7 @@ class Page(BaseModel):
 
     Args:
         id (str): The unique page identifier.
-        name (Optional[str]): The page name to display as Heading 1 on page. Defaults to None.
+        title (Optional[str]): The page title to display as Heading 1 on page. Defaults to None.
         main (Optional[Callable]): _description_. Defaults to 'undefined_page_callable'.
         main_args (Optional[list[Any]]): _description_. Defaults to empty list.
         main_kwargs (Optional[dict[str, Any]]): _description_. Defaults to empty dictionary.
@@ -21,44 +22,45 @@ class Page(BaseModel):
         show_kwargs (Optional[dict[str, Any]]): _description_. Defaults to empty dictionary.
     """
     id: str
-    name: Optional[str] = None
-    main: Optional[Callable] = undefined_page_callable
+    title: Optional[str] = None
+    main: Optional[Callable[[Optional[Any]], None]] = utility.undefined_page_callable
     main_args: Optional[list[Any]] = list()
     main_kwargs: Optional[dict[str, Any]] = dict()
-    show: Optional[Callable] = None
+    show: Optional[Callable[[Optional[Any]], bool]] = None
     show_args: Optional[list[Any]] = list()
     show_kwargs: Optional[dict[str, Any]] = dict()
 
 
     # todo: update authentication details
     def __call__(self) -> Any:
-        if self.name is not None:
-            st.markdown(f"# {self.name}")
+        if self.title is not None:
+            st.markdown(f"# {self.title}")
         if self.show is None:
             log.info(
-                f"[{st.session_state['email']}] render page, non-restricted: {self.name}"
+                f"[{st.session_state['email']}] render page, non-restricted: {self.title}"
             )
             return self.main(*self.main_args, **self.main_kwargs)
         else:
             if self.show():
                 log.info(
-                    f"[{st.session_state['email']}] render page, restricted: {self.name}"
+                    f"[{st.session_state['email']}] render page, restricted: {self.title}"
                 )
                 return self.main(*self.main_args, **self.main_kwargs)
             else:
                 log.error(
-                    f"[{st.session_state['email']}] unauthorized user attempted to access page: {self.name}"
+                    f"[{st.session_state['email']}] unauthorized user attempted to access page: {self.title}"
                 )
                 st.error("**Error: You do not have authorization to access this page.**")
 
 class App(BaseModel):
-    window_title: str = "Streamlit Infinite Pages"
-    window_icon: str = "📚"
-    wide_layout: bool = True
-    sidebar_state: str = "expanded"
-    minimal_theme: bool = True
-    auth_function: Optional[Callable] = None
-    logo_path: Optional[str | Path] = None
-    custom_css: Optional[str | Path] = None
+    app_name: str = "Streamlit Infinite Pages"
+    app_icon: str = "📚"
+    page_layout: str = "wide"
+    initial_sidebar_state: str = "expanded"
+    custom_logo: str | Path = constant.path_default_logo
+    custom_css: Optional[str | Path] = constant.path_default_theme
     custom_js: Optional[str | Path] = None
+    initial_session_state: Optional[dict[str, Any]] = dict()
+    authorization_function: Optional[Callable[[Optional[Any]], bool]] = None
+    alpha_sort_pages: bool = False
 
