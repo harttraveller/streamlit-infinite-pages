@@ -5,7 +5,7 @@ description = "Streamlit app template with minimal theme, keyboard shortcuts, an
 authors = ["Hart Traveller <ruling_fiction.0b@icloud.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "labs" }]
+packages = [{ include = "sip" }]
 include = ["sip/.assets/**/*"]
 
 [tool.poetry.dependencies]
