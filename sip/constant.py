@@ -10,3 +10,4 @@ path_default_logo: Path = path_assets / "default_logo.png"
 # Variables
 
 default_unauthorized_message: str = "You are not authorized to access this page."
+default_undeveloped_messaged: str = "This page has not yet been developed."
