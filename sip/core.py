@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+from streamlit.commands.page_config import Layout
 from streamlit.delta_generator import DeltaGenerator
 from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
@@ -58,20 +59,33 @@ class Page:
 class App:
 
     def __init__(self, **modes) -> None:
-        for key, val in modes.items():
-            if not isinstance(val, AppConfig):
-                raise ValueError(f"'{key}' must be instance of 'AppConfig'")
-        self.modes: dict[str, AppConfig] = modes
-
-    def add(self, page: Page) -> None: ...
-
-    # def __set_page_config(self) -> None:
-    #     st.set_page_config(
-    #         page_title=self.app
-    #     )
-    def build(self) -> None:
         run_mode: str | None = os.getenv(run_mode_environment_key)
         if run_mode is None:
             raise ValueError(f"'{run_mode_environment_key}' not set")
-        if run_mode not in self.modes.keys():
-            raise ValueError(f"'{run_mode}' not found in 'modes'")
+        if run_mode not in modes.keys():
+            raise ValueError(f"'{run_mode}' not found in key word arguments")
+        for key, val in modes.items():
+            if not isinstance(val, AppConfig):
+                raise ValueError(f"'{key}' must be instance of 'AppConfig'")
+        self.cfg: AppConfig = modes[run_mode]
+
+    def add(self, page: Page) -> None: ...
+
+    def __set_page_config(self) -> None:
+        st.set_page_config(
+            page_title=self.cfg.app_name,
+            page_icon=self.cfg.app_icon,
+            layout=self.cfg.page_layout,
+            initial_sidebar_state=self.cfg.initial_sidebar_state,
+        )
+
+    def __initialize_session_state(self) -> None:
+        "initialize streamlit session state keys"
+        if self.cfg.initial_session_state is not None:
+            for key, val in self.cfg.initial_session_state.items():
+                if key not in st.session_state.keys():
+                    st.session_state[key] = val
+
+    def build(self) -> None:
+        self.__set_page_config()
+        self.__initialize_session_state()
