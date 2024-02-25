@@ -1,5 +1,5 @@
 import streamlit as st
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, Any, Callable
 from loguru import logger as log
 from sip.utility import undefined_page_callable
@@ -51,7 +51,7 @@ class Page(BaseModel):
                 st.error("**Error: You do not have authorization to access this page.**")
 
 class App(BaseModel):
-    browser_window_title: str
-    browser_window_icon: str
+    browser_window_title: str = "Streamlit Infinite Pages"
+    browser_window_icon: str = "📚"
     wide_page_layout: Optional[bool] = True
     initial_sidebar_state: Optional[str] = "expanded"
