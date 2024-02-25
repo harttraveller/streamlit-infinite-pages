@@ -1,5 +1,6 @@
 import toml
 from pathlib import Path
+from sip.constant import path_streamlit, path_streamlit_credentials
 
 
 def skip_streamlit_newsletter_request() -> None:
@@ -9,10 +10,8 @@ def skip_streamlit_newsletter_request() -> None:
     if the Streamlit credentials file exists, and if not, creates it and writes
     an empty email field so it doesn't do that.
     """
-    streamlit_config_directory: Path = Path.home() / ".streamlit"
-    streamlit_credentials_file: Path = streamlit_config_directory / "credentials.toml"
-    if not streamlit_credentials_file.exists():
-        streamlit_config_directory.mkdir(exist_ok=True)
-        with open(streamlit_credentials_file, "w") as file:
+    if not path_streamlit_credentials.exists():
+        path_streamlit.mkdir(exist_ok=True)
+        with open(path_streamlit_credentials, "w") as file:
             toml.dump({"general": {"email": ""}}, file)
         file.close()
