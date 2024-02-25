@@ -1,6 +1,9 @@
 """
 Source: https://docs.streamlit.io/library/advanced-features/configuration
 
+You can run `streamlit config show` in an environment with streamlit
+installed to see the source of the docstrings.
+
 This file contains pydantic class for streamlit config file, which can be
 modified and easily saved to the ~/.streamlit/config.toml location.
 
@@ -19,11 +22,11 @@ hide the traceback.
 
 import toml
 from pathlib import Path
+from typing import Optional
 from pydantic import BaseModel, field_validator
 
 
-# global config is ignored as 'global' is python keyword, so adding
-# as attribute introduces problems, and alias didn't seem to work
+# ! ignored as 'global' is python keyword; adding attribute causes issues
 class GlobalConfig(BaseModel):
     disableWidgetStateDuplicationWarning: bool = False
     showWarningOnDirectExecution: bool = True
@@ -48,21 +51,69 @@ class ClientConfig(BaseModel):
 
 class RunnerConfig(BaseModel):
     magicEnabled: bool = True
+    fastReruns: bool = True
+    enforceSerializableSessionState: bool = False
+    enumCoercion: str = "nameOnly"
+
+    def __validate_enumCoercion(cls, enumCoercion: str) -> str:
+        valid_enumCoercion_options: list[str] = {"nameOnly", "off", "nameAndValue"}
+        if enumCoercion not in valid_enumCoercion_options:
+            raise ValueError(
+                f"'enumCoercion' must be one of {valid_enumCoercion_options}"
+            )
 
 
-class ServerConfig(BaseModel): ...
+class ServerConfig(BaseModel):
+    folderWatchBlacklist: list = list()
+    fileWatcherType: str = "auto"
+    # cookieSecret # ! ignored as it is randomly generated
+    headless: bool = False
+    runOnSave: bool = True
+    # address # ! ignored as I don't entirely understand it yet
+    port: int = 8501
+    baseUrlPath: str = ""
+    enableCORS: bool = True
+    enableXsrfProtection: bool = True
+    maxUploadSize: int = 200
+    maxMessageSize: int = 200
+    enableWebsocketCompression: bool = False
+    enableStaticServing: bool = False
+    # sslCertfile # ! ignored for security reasons, see docstring
+    # sslKeyFile # ! ignored for security reasons, see docstring
+
+    def __validate_fileWatcherType(cls, fileWatcherType: str) -> str:
+        valid_fileWatcherType_options: list[str] = {"auto", "watchdog", "poll", "none"}
+        if fileWatcherType not in valid_fileWatcherType_options:
+            raise ValueError(
+                f"'fileWatcherType' must be one of {valid_fileWatcherType_options}"
+            )
 
 
-class BrowserConfig(BaseModel): ...
+class BrowserConfig(BaseModel):
+    serverAddress: str = "localhost"
+    gatherUsageStates: bool = True
+    serverPort: int = 8501
 
 
-class MapboxConfig(BaseModel): ...
+class MapboxConfig(BaseModel):
+    token: str = ""
 
 
-class DeprecationConfig(BaseModel): ...
+class DeprecationConfig(BaseModel):
+    showPyplotGlobalUse: bool = True
 
 
-class ThemeConfig(BaseModel): ...
+class ThemeConfig(BaseModel):
+    base: Optional[str] = None
+    backgroundColor: Optional[str] = None
+    secondaryBackgroundColor: Optional[str] = None
+    textColor: Optional[str] = None
+    font: Optional[str] = None
+
+    def __validate_font(cls, font: str) -> str:
+        valid_font_options: list[str] = {"sans serif", "serif", "monospace"}
+        if font not in valid_font_options:
+            raise ValueError(f"'font' must be one of {valid_font_options}")
 
 
 class StreamlitConfig(BaseModel):
