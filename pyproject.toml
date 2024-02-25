@@ -12,6 +12,8 @@ include = ["sip/demo/.assets/**/*", "sip/.include/**/*"]
 python = "^3.10"
 rich-click = "^1.7.3"
 streamlit = "^1.31.1"
+pydantic = "^2.6.2"
+loguru = "^0.7.2"
 
 [build-system]
 requires = ["poetry-core"]
