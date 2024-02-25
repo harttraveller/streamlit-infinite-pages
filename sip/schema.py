@@ -5,9 +5,6 @@ from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from sip.constant import path_default_logo, path_default_theme
-from sip.utils.defaults import default_unauthorized, default_undeveloped
-from sip.utils.commands import make_app_start_command
-from sip.utils.patches import skip_streamlit_newsletter_request
 
 
 @dataclass
@@ -101,10 +98,14 @@ class Page:
     authorizer: Optional[Callable[[Optional[Any]], bool]] = None
     authorizer_args: Optional[list[Any]] = list()
     authorizer_kwargs: Optional[dict[str, Any]] = dict()
-    unauthorized: Optional[Callable[[Optional[Any]], None]] = default_unauthorized
+    unauthorized: Optional[Callable[[Optional[Any]], None]] = lambda: st.error(
+        "You are not authorized to access this page."
+    )
     unauthorized_args: Optional[list[Any]] = list()
     unauthorized_kwargs: Optional[dict[str, Any]] = dict()
-    undeveloped: Optional[Callable[[Optional[Any]], None]] = default_undeveloped
+    undeveloped: Optional[Callable[[Optional[Any]], None]] = lambda: st.error(
+        "This page has not yet been developed."
+    )
     undeveloped_args: Optional[list[Any]] = list()
     undeveloped_kwargs: Optional[dict[str, Any]] = dict()
 
