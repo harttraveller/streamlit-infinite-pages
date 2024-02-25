@@ -5,8 +5,8 @@ from pydantic.dataclasses import dataclass
 from typing import Optional, Any, Callable
 from loguru import logger as log
 from sip import constant
-from sip.config import AppConfig
-from sip.defaults import default_unauthorized, default_undeveloped
+from sip.core.config import AppConfig
+from sip.utils.defaults import default_unauthorized, default_undeveloped
 
 
 @dataclass
