@@ -17,6 +17,14 @@ from sip.utils.st_config import (
 )
 
 
+def default_unauthorized(*args, **kwargs) -> None:
+    st.error("You are not authorized to access this page.")
+
+
+def default_undeveloped(*args, **kwargs) -> None:
+    st.error("This page has not yet been developed.")
+
+
 @dataclass
 class AppConfig:
     # main configuration parameters
@@ -168,33 +176,23 @@ class Page:
     """
     id: str
     title: Optional[str] = None
-    main: Optional[Callable[[Optional[Any]], None]] = None
-    main_args: Optional[list[Any]] = list()
-    main_kwargs: Optional[dict[str, Any]] = dict()
+    main: Callable[[Optional[Any]], None] = default_undeveloped
+    main_args: list[Any] = list()
+    main_kwargs: dict[str, Any] = dict()
     authorizer: Optional[Callable[[Optional[Any]], bool]] = None
-    authorizer_args: Optional[list[Any]] = list()
-    authorizer_kwargs: Optional[dict[str, Any]] = dict()
-    unauthorized: Optional[Callable[[Optional[Any]], None]] = lambda: st.error(
-        "You are not authorized to access this page."
-    )
-    unauthorized_args: Optional[list[Any]] = list()
-    unauthorized_kwargs: Optional[dict[str, Any]] = dict()
-    undeveloped: Optional[Callable[[Optional[Any]], None]] = lambda: st.error(
-        "This page has not yet been developed."
-    )
-    undeveloped_args: Optional[list[Any]] = list()
-    undeveloped_kwargs: Optional[dict[str, Any]] = dict()
+    authorizer_args: list[Any] = list()
+    authorizer_kwargs: dict[str, Any] = dict()
+    unauthorized: Callable[[Optional[Any]], None] = default_unauthorized
+    unauthorized_args: list[Any] = list()
+    unauthorized_kwargs: dict[str, Any] = dict()
 
     def __call__(self) -> Any:
         if self.title is not None:
             st.markdown(f"# {self.title}")
-        if self.main is None:
-            self.undeveloped(*self.undeveloped_args, **self.undeveloped_kwargs)
+        if self.authorizer is None:
+            self.main(*self.main_args, **self.main_kwargs)
         else:
-            if self.authorizer is None:
+            if self.authorizer(*self.authorizer_args, **self.authorizer_kwargs):
                 self.main(*self.main_args, **self.main_kwargs)
             else:
-                if self.authorizer(*self.authorizer_args, **self.authorizer_kwargs):
-                    self.main(*self.main_args, **self.main_kwargs)
-                else:
-                    self.unauthorized(*self.unauthorized_args, **self.unauthorized_kwargs)
+                self.unauthorized(*self.unauthorized_args, **self.unauthorized_kwargs)
