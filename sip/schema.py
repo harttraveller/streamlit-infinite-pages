@@ -1,4 +1,5 @@
 import streamlit as st
+from pathlib import Path
 from pydantic import BaseModel, field_validator
 from typing import Optional, Any, Callable
 from loguru import logger as log
@@ -51,7 +52,13 @@ class Page(BaseModel):
                 st.error("**Error: You do not have authorization to access this page.**")
 
 class App(BaseModel):
-    browser_window_title: str = "Streamlit Infinite Pages"
-    browser_window_icon: str = "📚"
-    wide_page_layout: Optional[bool] = True
-    initial_sidebar_state: Optional[str] = "expanded"
+    window_title: str = "Streamlit Infinite Pages"
+    window_icon: str = "📚"
+    wide_layout: bool = True
+    sidebar_state: str = "expanded"
+    minimal_theme: bool = True
+    auth_function: Optional[Callable] = None
+    logo_path: Optional[str | Path] = None
+    custom_css: Optional[str | Path] = None
+    custom_js: Optional[str | Path] = None
+
