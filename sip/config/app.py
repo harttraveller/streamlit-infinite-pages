@@ -25,9 +25,9 @@ class AppConfig:
     app_icon: str = "📚"
     page_layout: Layout = "wide"
     initial_sidebar_state: InitialSideBarState = "expanded"
-    custom_logo: str | Path = path_default_logo
-    custom_css: Optional[str | Path] = path_default_theme
-    custom_js: Optional[str | Path] = None
+    custom_logo_path: str | Path = path_default_logo
+    custom_css_path: Optional[str | Path] = path_default_theme
+    custom_js_path: Optional[str | Path] = None
     initial_session_state: dict[str, Any] = dict()
     authorization_function: Optional[Callable[[Optional[Any]], bool]] = None
     alpha_sort_pages: bool = False
@@ -128,29 +128,31 @@ class AppConfig:
     #         )
     #     return initial_sidebar_state
 
-    @field_validator("custom_logo")
-    def __validate_custom_logo(cls, custom_logo: str | Path) -> Path:
-        custom_logo = Path(custom_logo)
-        if not custom_logo.exists():
-            raise FileNotFoundError(f"'custom_logo' not found at: {str(custom_logo)}")
-        if not str(custom_logo).endswith(".png"):
+    @field_validator("custom_logo_path")
+    def __validate_custom_logo(cls, custom_logo_path: str | Path) -> Path:
+        custom_logo_path = Path(custom_logo_path)
+        if not custom_logo_path.exists():
+            raise FileNotFoundError(
+                f"'custom_logo' not found at: {str(custom_logo_path)}"
+            )
+        if not str(custom_logo_path).endswith(".png"):
             raise ValueError(f"'custom_logo' must be a .png file")
-        return custom_logo
+        return custom_logo_path
 
-    @field_validator("custom_css")
-    def __validate_custom_css(cls, custom_css: str | Path) -> Path:
-        custom_css = Path(custom_css)
-        if not custom_css.exists():
-            raise FileNotFoundError(f"'custom_css' not found at: {str(custom_css)}")
-        if not str(custom_css).endswith(".css"):
+    @field_validator("custom_css_path")
+    def __validate_custom_css(cls, custom_css_path: str | Path) -> Path:
+        custom_css_path = Path(custom_css_path)
+        if not custom_css_path.exists():
+            raise FileNotFoundError(f"'custom_css' not found at: {str(custom_css_path)}")
+        if not str(custom_css_path).endswith(".css"):
             raise ValueError(f"'custom_css' must be a .css file")
-        return custom_css
+        return custom_css_path
 
-    @field_validator("custom_js")
-    def __validate_custom_js(cls, custom_js: str | Path) -> Path:
-        custom_js = Path(custom_js)
-        if not custom_js.exists():
-            raise FileNotFoundError(f"'custom_js' not found at: {str(custom_js)}")
-        if not str(custom_js).endswith(".js"):
+    @field_validator("custom_js_path")
+    def __validate_custom_js(cls, custom_js_path: str | Path) -> Path:
+        custom_js_path = Path(custom_js_path)
+        if not custom_js_path.exists():
+            raise FileNotFoundError(f"'custom_js' not found at: {str(custom_js_path)}")
+        if not str(custom_js_path).endswith(".js"):
             raise ValueError(f"'custom_js' must be a .js file")
-        return custom_js
+        return custom_js_path
