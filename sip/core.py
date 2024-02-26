@@ -107,21 +107,21 @@ class App:
         self.__control_exception_traceback()
         self.__initialize_session_state()
         self.__apply_custom_css()
-        # self.__apply_custom_js()
+        self.__apply_custom_js()
         # todo: this code sucks, needs to be refactored/rewritten
-        # if self.config.authentication_check is None:
-        #     self.__render_app()
-        # else:
-        #     auth_check_state = backend.collect_session_state_vars(
-        #         self.config.authentication_check_keys
-        #     )
-        #     if self.config.authentication_check(**auth_check_state):
-        #         auth_flow_state_info = backend.collect_session_state_vars(
-        #             self.config.not_authenticated_action_keys
-        #         )
-        #         if self.config.not_authenticated_action is not None:
-        #             self.config.not_authenticated_action(**auth_flow_state_info)
-        #         else:
-        #             st.error(
-        #                 "You are not authenticated, but no authentication flow is defined in this app."
-        #             )
+        if self.config.authentication_check is None:
+            self.__render_app()
+        else:
+            auth_check_state = backend.collect_session_state_vars(
+                self.config.authentication_check_keys
+            )
+            if self.config.authentication_check(**auth_check_state):
+                auth_flow_state_info = backend.collect_session_state_vars(
+                    self.config.not_authenticated_action_keys
+                )
+                if self.config.not_authenticated_action is not None:
+                    self.config.not_authenticated_action(**auth_flow_state_info)
+                else:
+                    st.error(
+                        "You are not authenticated, but no authentication flow is defined in this app."
+                    )
