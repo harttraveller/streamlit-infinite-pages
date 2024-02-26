@@ -55,10 +55,14 @@ class Page:
     def render_blocked_kwargs(self) -> dict[str, Any]:
         return Page.__collect_session_state_vars(self.render_blocked_keys)
 
+    @property
+    def is_accessible(self) -> bool:
+        return self.access_check(**self.access_check_kwargs)
+
     def __call__(self) -> Any:
         if self.name is not None:
             st.markdown(f"# {self.name}")
-        if self.access_check(**self.access_check_kwargs):
+        if self.is_accessible:
             self.render_main(**self.render_main_kwargs)
         else:
             self.render_blocked(**self.render_blocked_kwargs)
