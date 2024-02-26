@@ -1,5 +1,5 @@
 from sip.core import App, AppConfig, Page
-from .page import home, test, broken
+from sip_demo.page import home, test, broken
 
 
 dev_config: AppConfig = AppConfig(disable_traceback=False)
