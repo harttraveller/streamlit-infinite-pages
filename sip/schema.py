@@ -28,8 +28,7 @@ class Page(BaseModel):
         show_args (Optional[list[Any]]): _description_. Defaults to empty list.
         show_kwargs (Optional[dict[str, Any]]): _description_. Defaults to empty dictionary.
     """
-    id: str
-    name: Optional[str] = None
+    name: str
     render_main: Callable[..., None] = default_render_main
     render_main_keys: list[str] = list()
     access_check: Callable[..., bool] = default_access_check
@@ -54,8 +53,8 @@ class Page(BaseModel):
         return self.access_check(**self.access_check_kwargs)
 
     def __call__(self) -> Any:
-        if self.name is not None:
-            st.markdown(f"# {self.name}")
+        # if self.name is not None:
+        #     st.markdown(f"# {self.name}")
         if self.is_accessible:
             self.render_main(**self.render_main_kwargs)
         else:

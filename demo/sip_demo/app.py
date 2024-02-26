@@ -23,8 +23,8 @@ app.add(
 
 app.add(
     Page(
-        name="Broken Page (Zero Division Error)",
-        render_blocked=broken.render,
+        name="Broken Page",
+        render_main=broken.render,
     )
 )
 
