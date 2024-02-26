@@ -123,20 +123,18 @@ def current_page() -> str | None:
     note that this is done otherwise anytime the selectbox is cleared,
     or the page is reloaded, the page will revert to the default
     """
-    query_params = {
-        key: val[0] for key, val in st.experimental_get_query_params().items()
-    }
+    query_params = st.query_params.get_all(env.key_page_id)
     if not len(query_params):
         return None
-    elif env.key_page_id not in query_params.keys():
+    elif env.key_page_id not in query_params:
         return None
     else:
-        return query_params[env.key_page_id]
+        return query_params[0]
 
 
 def set_page(page_id: str) -> None:
-    st.experimental_set_query_params(**{env.key_page_id: page_id})
+    st.query_params[env.key_page_id] = page_id
 
 
 def reset_page() -> None:
-    st.experimental_set_query_params(**dict())
+    st.query_params.clear()
