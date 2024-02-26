@@ -78,7 +78,7 @@ class App:
                     )
                 )
                 if self.config.authentication_check is None:
-                    auth_info_text = ":blue[Authorization Unnecessary]"
+                    auth_info_text = ":blue[**Authorization Unnecessary**]"
                 else:
                     auth_info_text = backend.format_email(
                         st.session_state[env.state_key_user_email]
@@ -97,6 +97,8 @@ class App:
         page_name = None
         if selected_page is not None:
             backend.set_page(selected_page)
+            page_name = selected_page
+        else:
             page_name = backend.current_page()
         if page_name is not None:
             if page_name in self.pages.keys():
