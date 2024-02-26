@@ -18,8 +18,16 @@ from sip.config.streamlit import (
 
 # todo: add keyboard shortcut customization
 
+
 @dataclass
 class LogoConfig:
+    top: str = "0.3rem"
+    bottom: str = "auto"
+    left: str = "0.2rem"
+    right: str = "auto"
+    height: str = "2.75rem"
+    position: str = "absolute"
+    classes: list[str] = ["logo"]
 
 
 @dataclass
@@ -32,6 +40,7 @@ class AppConfig:
     custom_logo_path: str | Path = path_default_logo
     custom_logo_link: str = "http://localhost:8501"
     custom_logo_newtab: bool = False
+    custom_logo_css_params: LogoConfig = LogoConfig()
     custom_css_path: Optional[str | Path] = path_default_theme
     custom_js_path: Optional[str | Path] = None
     initial_session_state: dict[str, Any] = dict()
