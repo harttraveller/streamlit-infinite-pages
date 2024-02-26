@@ -5,7 +5,7 @@ from streamlit.delta_generator import DeltaGenerator
 from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from sip.config.app import AppConfig
-from sip.defaults import default_undeveloped, default_unauthorized
+from sip.defaults import default_not_developed, default_not_accessible
 from sip import env, backend
 
 
@@ -27,23 +27,23 @@ class Page:
     """
     id: str
     title: Optional[str] = None
-    main: Callable[[Optional[Any]], None] = default_undeveloped
+    main: Callable[[Optional[Any]], None] = default_not_developed
     main_args: list[Any] = list()
     main_kwargs: dict[str, Any] = dict()
-    authorizer: Optional[Callable[[Optional[Any]], bool]] = None
-    authorizer_args: list[Any] = list()
-    authorizer_kwargs: dict[str, Any] = dict()
-    unauthorized: Callable[[Optional[Any]], None] = default_unauthorized
-    unauthorized_args: list[Any] = list()
-    unauthorized_kwargs: dict[str, Any] = dict()
+    show: Optional[Callable[[Optional[Any]], bool]] = None
+    show_args: list[Any] = list()
+    show_kwargs: dict[str, Any] = dict()
+    noaccess: Callable[[Optional[Any]], None] = default_not_accessible
+    noaccess_args: list[Any] = list()
+    noaccess_kwargs: dict[str, Any] = dict()
 
     def __call__(self) -> Any:
         if self.title is not None:
             st.markdown(f"# {self.title}")
-        if self.authorizer is None:
+        if self.show is None:
             self.main(*self.main_args, **self.main_kwargs)
         else:
-            if self.authorizer(*self.authorizer_args, **self.authorizer_kwargs):
+            if self.show(*self.show_args, **self.show_kwargs):
                 self.main(*self.main_args, **self.main_kwargs)
             else:
-                self.unauthorized(*self.unauthorized_args, **self.unauthorized_kwargs)
+                self.noaccess(*self.noaccess_args, **self.noaccess_kwargs)
