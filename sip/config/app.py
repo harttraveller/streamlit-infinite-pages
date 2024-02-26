@@ -45,7 +45,8 @@ class AppConfig:
     custom_css_path: Optional[str | Path] = path_default_theme
     custom_js_path: Optional[str | Path] = None
     initial_session_state: dict[str, Any] = dict()
-    authorization_function: Optional[Callable[[Optional[Any]], bool]] = None
+    authentication_check: Optional[Callable[..., bool]] = None
+    authentication_check_keys: list[str] = list()
     alpha_sort_pages: bool = False
     disable_traceback: bool = False
     exception_handler: Callable[[Exception], None] = default_exception_handler
