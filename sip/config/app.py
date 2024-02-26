@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pydantic import field_validator
 from streamlit.commands.page_config import Layout, InitialSideBarState
 from sip.env import path_default_logo, path_default_theme
-from sip.defaults import default_exception_handler
+from sip.utils.defaults import default_exception_handler
 from sip.config.streamlit import (
     StreamlitConfig,
     LoggerConfig,
@@ -32,7 +32,7 @@ class LogoConfig(BaseModel):
 
 class AppConfig(BaseModel):
     # main configuration parameters
-    app_name: str = "Streamlit Infinite Pages"  # * no validation
+    app_name: str = "Streamlit Infinite Pages"
     app_icon: str = "📚"
     app_version: Optional[str] = None
     page_layout: Layout = "wide"
@@ -118,6 +118,7 @@ class AppConfig(BaseModel):
 
     def __post_init__(self) -> None:
         self.streamlit_config = self.__make_streamlit_config()
+        self.streamlit_config.save(overwrite=True)
 
     @field_validator("app_icon")
     def __validate_app_icon(cls, app_icon: str) -> str:
