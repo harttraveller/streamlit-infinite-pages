@@ -109,3 +109,29 @@ def format_email(email: str) -> str:
         return f"**:green[{informal_username}:green[@]:green[{domain}]]**"
     else:
         return f"**:red[Not Logged In]**"
+
+
+def current_page() -> str | None:
+    """
+    get current page from url query params
+
+    note that this is done otherwise anytime the selectbox is cleared,
+    or the page is reloaded, the page will revert to the default
+    """
+    query_params = {
+        key: val[0] for key, val in st.experimental_get_query_params().items()
+    }
+    if not len(query_params):
+        return None
+    elif "page" not in query_params.keys():
+        return None
+    else:
+        return query_params["page"]
+
+
+def set_page(page: str) -> None:
+    st.experimental_set_query_params(page=page)
+
+
+def reset_page() -> None:
+    st.experimental_set_query_params(**dict())
