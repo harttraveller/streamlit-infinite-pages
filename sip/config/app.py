@@ -27,7 +27,7 @@ class LogoConfig:
     right: str = "auto"
     height: str = "2.75rem"
     position: str = "absolute"
-    classes: list[str] = ["logo"]
+    css_class: str = "logo"
 
 
 @dataclass
