@@ -30,7 +30,7 @@ class Page:
         show_kwargs (Optional[dict[str, Any]]): _description_. Defaults to empty dictionary.
     """
     id: str
-    title: Optional[str] = None
+    name: Optional[str] = None
     main: Callable[..., None] = default_not_developed
     main_kwargs: list[str] = list()
     show: Callable[..., bool] = default_visibility_check
@@ -43,8 +43,8 @@ class Page:
         return {key: st.session_state[key] for key in session_state_keys}
 
     def __call__(self) -> Any:
-        if self.title is not None:
-            st.markdown(f"# {self.title}")
+        if self.name is not None:
+            st.markdown(f"# {self.name}")
         if self.show is None:
             self.main(**Page.__collect_session_state_vars(self.main_kwargs))
         else:
