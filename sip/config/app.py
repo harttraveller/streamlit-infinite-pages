@@ -3,7 +3,8 @@ from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from streamlit.commands.page_config import Layout, InitialSideBarState
-from sip.env import path_default_logo, path_default_theme, required_session_state_keys
+from sip.env import path_default_logo, path_default_theme
+from sip.defaults import default_exception_handler
 from sip.config.streamlit import (
     StreamlitConfig,
     LoggerConfig,
@@ -17,6 +18,9 @@ from sip.config.streamlit import (
 
 # todo: add keyboard shortcut customization
 
+@dataclass
+class LogoConfig:
+
 
 @dataclass
 class AppConfig:
@@ -26,13 +30,15 @@ class AppConfig:
     page_layout: Layout = "wide"
     initial_sidebar_state: InitialSideBarState = "expanded"
     custom_logo_path: str | Path = path_default_logo
+    custom_logo_link: str = "http://localhost:8501"
+    custom_logo_newtab: bool = False
     custom_css_path: Optional[str | Path] = path_default_theme
     custom_js_path: Optional[str | Path] = None
     initial_session_state: dict[str, Any] = dict()
     authorization_function: Optional[Callable[[Optional[Any]], bool]] = None
     alpha_sort_pages: bool = False
-    disable_error_traceback: bool = False
-    custom_error_handler: Optional[Callable] = None
+    disable_traceback: bool = False
+    exception_handler: Callable[[Exception], None] = default_exception_handler
     # .streamlit/config.toml configuration parameters
     st_cfg_logger_level: str = "info"
     st_cfg_logger_enable_rich: bool = True
@@ -98,13 +104,8 @@ class AppConfig:
             ),
         )
 
-    def __add_required_session_state_keys(self) -> None:
-        for key in required_session_state_keys:
-            self.initial_session_state[key] = None
-
     def __post_init__(self) -> None:
         self.streamlit_config = self.__make_streamlit_config()
-        self.__add_required_session_state_keys()
 
     @field_validator("app_icon")
     def __validate_app_icon(cls, app_icon: str) -> str:
