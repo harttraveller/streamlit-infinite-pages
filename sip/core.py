@@ -16,6 +16,7 @@ class App:
             if not isinstance(val, AppConfig):
                 raise ValueError(f"'{key}' must be instance of 'AppConfig'")
         self.config: AppConfig = modes[run_mode]
+        self.config.make_streamlit_config().save(overwrite=True)
         self.pages: dict[str, Page] = dict()
         self.indexed_pages: list[str] = list()
 
