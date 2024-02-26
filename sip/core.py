@@ -6,7 +6,6 @@ from sip import env, backend
 
 
 class App:
-
     def __init__(self, **modes) -> None:
         run_mode: str | None = os.getenv(env.run_mode_environment_key)
         if run_mode is None:
