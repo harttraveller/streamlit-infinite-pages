@@ -124,16 +124,18 @@ def current_page() -> str | None:
     or the page is reloaded, the page will revert to the default
     """
     query_params = st.query_params.get_all(env.key_page_id)
+    print(query_params)
     if not len(query_params):
         return None
-    elif env.key_page_id not in query_params:
-        return None
     else:
-        return query_params[0]
+        page = query_params[0]
+        print(page)
+        return page
 
 
-def set_page(page_id: str) -> None:
-    st.query_params[env.key_page_id] = page_id
+def set_page(page_name: str) -> None:
+    print(f"setting page: {page_name}")
+    st.query_params[env.key_page_id] = page_name
 
 
 def reset_page() -> None:
