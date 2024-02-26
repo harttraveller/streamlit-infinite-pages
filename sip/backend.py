@@ -1,7 +1,8 @@
+import sys
 import streamlit as st
 import streamlit.components.v1 as components
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from PIL import Image
 from PIL.Image import Image as ImageObject
 from sip import env
@@ -52,3 +53,8 @@ def load_js(path: str | Path | None) -> str:
 
 def inject_js(js: str) -> None:
     components.html(js, height=0, width=0)
+
+
+def modify_exception_behavior(exception_handler: Callable[[Exception], None]) -> None:
+    script_runner = sys.modules["streamlit.runtime.scriptrunner.script_runner"]
+    script_runner.handle_uncaught_app_exception = exception_handler  # type:ignore
