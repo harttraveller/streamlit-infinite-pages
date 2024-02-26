@@ -47,6 +47,8 @@ class AppConfig:
     initial_session_state: dict[str, Any] = dict()
     authentication_check: Optional[Callable[..., bool]] = None
     authentication_check_keys: list[str] = list()
+    not_authenticated_action: Optional[Callable[..., None]] = None
+    not_authenticated_action_keys: list[str] = list()
     alpha_sort_pages: bool = False
     disable_traceback: bool = False
     exception_handler: Callable[[Exception], None] = default_exception_handler
