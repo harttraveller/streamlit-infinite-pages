@@ -22,6 +22,11 @@ def add_session_state_variables(data: dict[str, Any] | set[str]) -> None:
         raise ValueError("invalid type passed to 'data' parameter")
 
 
+def collect_session_state_vars(session_state_keys: list[str]) -> dict[str, Any]:
+    "session state variables may change, so this needs to be dynamically generated"
+    return {key: st.session_state[key] for key in session_state_keys}
+
+
 def load_css(path: str | Path | None) -> str:
     if path is None:
         return "<style>\n</style>"
