@@ -129,8 +129,8 @@ def current_page() -> str | None:
         return query_params[env.key_page_id]
 
 
-def set_page(page: str) -> None:
-    st.experimental_set_query_params(page=page)
+def set_page(page_id: str) -> None:
+    st.experimental_set_query_params(**{env.key_page_id: page_id})
 
 
 def reset_page() -> None:
