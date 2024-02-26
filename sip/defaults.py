@@ -9,5 +9,5 @@ def default_undeveloped(*args, **kwargs) -> None:
     st.error("This page has not yet been developed.")
 
 
-def default_exception_handler(*args, **kwargs) -> None:
+def default_exception_handler(e: Exception, *args, **kwargs) -> None:
     st.toast(":red[Internal Server Error]")
