@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 from pydantic import field_validator
 from streamlit.commands.page_config import Layout, InitialSideBarState
 from sip.env import path_default_logo, path_default_theme
@@ -19,19 +20,17 @@ from sip.config.streamlit import (
 # todo: add keyboard shortcut customization
 
 
-@dataclass
-class LogoConfig:
+class LogoConfig(BaseModel):
     top: str = "0.3rem"
     bottom: str = "auto"
     left: str = "0.2rem"
     right: str = "auto"
     height: str = "2.75rem"
     position: str = "absolute"
-    css_class: str = "logo"
+    classes: list[str] = ["logo"]
 
 
-@dataclass
-class AppConfig:
+class AppConfig(BaseModel):
     # main configuration parameters
     app_name: str = "Streamlit Infinite Pages"  # * no validation
     app_icon: str = "📚"
