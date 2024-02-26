@@ -9,7 +9,6 @@ app = App(dev=dev_config, prod=prod_config)
 
 app.add(
     Page(
-        id="home",
         name="Home Page",
         render_main=home.render,
     )
@@ -17,7 +16,6 @@ app.add(
 
 app.add(
     Page(
-        id="test",
         name="Test Page",
         render_main=test.render,
     )
@@ -25,7 +23,6 @@ app.add(
 
 app.add(
     Page(
-        id="broken",
         name="Broken Page (Zero Division Error)",
         render_blocked=broken.render,
     )
