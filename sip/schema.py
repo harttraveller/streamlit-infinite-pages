@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit.commands.page_config import Layout
 from streamlit.delta_generator import DeltaGenerator
 from typing import Any, Optional, Callable
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 from sip.config.app import AppConfig
 from sip.defaults import (
     default_render_main,
@@ -13,8 +13,7 @@ from sip.defaults import (
 from sip import env, backend
 
 
-@dataclass
-class Page:
+class Page(BaseModel):
     # todo: finish docstring
     """
     _summary_
