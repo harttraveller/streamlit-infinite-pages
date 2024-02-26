@@ -22,4 +22,5 @@ key_user_email: str = "user_email"
 required_session_state_keys: set[str] = {
     key_custom_css,
     key_custom_js,
+    key_user_email,
 }
