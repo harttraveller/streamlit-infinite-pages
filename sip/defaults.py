@@ -1,15 +1,15 @@
 import streamlit as st
 
 
-def default_not_accessible(*args, **kwargs) -> None:
+def default_render_blocked(**kwargs) -> None:
     st.error("This page is not currently accessible.")
 
 
-def default_not_developed(*args, **kwargs) -> None:
+def default_render_main(**kwargs) -> None:
     st.error("This page has not yet been developed.")
 
 
-def default_visibility_check(*args, **kwargs) -> bool:
+def default_access_check(**kwargs) -> bool:
     return True
 
 
