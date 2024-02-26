@@ -1,0 +1,129 @@
+html {
+    background: #26272F !important;
+}
+
+[data-testid="ScrollToBottomContainer"] {
+    overflow: hidden;
+}
+
+div[data-testid="stSidebarContent"] {
+    overflow-y: hidden;
+}
+
+header[data-testid="stHeader"] {
+    display: none;
+}
+
+footer {
+    display: none;
+}
+
+h1>div>a,
+h2>div>a,
+h3>div>a,
+h4>div>a,
+h5>div>a,
+h6>div>a {
+    display: none !important;
+}
+
+button[data-testid="StyledFullScreenButton"] {
+    display: none !important;
+}
+
+section:not([data-testid="stSidebar"]) .block-container {
+    margin-top: -3.8rem;
+    padding: 0rem 2.8rem !important;
+
+}
+
+label[data-testid="stWidgetLabel"][aria-hidden="true"] {
+    display: none !important;
+}
+
+
+section[data-testid="stSidebar"] .block-container {
+    margin-top: -6rem;
+}
+
+details summary div[data-testid="stMarkdownContainer"] p {
+    /* color: lightskyblue; */
+    transition: 0.3s !important;
+    font-weight: bold;
+}
+
+button[data-testid="stCopyButton"] svg {
+    stroke: lightgreen;
+}
+
+/* adjustable sidebar hover on line */
+
+div[data-testid="stSidebarContent"]+div {
+    display: none !important;
+}
+
+/* can still collapse, but elements get screwed up at certain widths */
+section[data-testid="stSidebar"] {
+    width: 460px !important;
+}
+
+div[data-baseweb="popover"] {
+    border: 1px solid #5576F6;
+}
+
+
+
+input[aria-label="quicksearch"] {
+    /* color: #CF6E34 !important;
+    caret-color: #CF6E34  !important; */
+    color: #5576F6 !important;
+    caret-color: #5576F6 !important;
+}
+
+/* change placeholder text color */
+div[data-baseweb="select"] div {
+    /* color: #5576F6 !important; */
+    color: grey !important;
+}
+
+/* ? change input text and caret color placeholder */
+
+
+
+div[data-testid="stSidebarUserContent"] h1 {
+    /* text-align: center; */
+    padding: 0 !important;
+}
+
+/* div[data-testid="stSidebarUserContent"] h2 {
+    padding-top: 0 !important;
+}
+ */
+
+button {
+    transition: 0.3s ease !important;
+}
+
+button[data-testid="baseButton-header"] {
+    color: red;
+    top: 1.2rem;
+    right: 1rem;
+    position: relative;
+    /* display: none !important; */
+}
+
+button[kind="headerNoPadding"] {
+    top: 1.3rem;
+    position: relative;
+    color: lightgreen;
+    /* display: none !important; */
+}
+
+hr {
+    border-bottom: 1px solid grey !important;
+}
+
+.logo:hover {
+    filter: brightness(1.2) !important;
+    transition: 0.3s ease !important;
+}
