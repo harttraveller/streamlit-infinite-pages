@@ -25,12 +25,12 @@ def add_session_state_variables(data: dict[str, Any] | set[str]) -> None:
 def load_css(path: str | Path | None) -> str:
     if path is None:
         return "<style>\n</style>"
-    elif env.key_custom_css not in st.session_state.keys():
+    elif env.state_key_custom_css not in st.session_state.keys():
         with open(path) as file:
             css = file.read()
         file.close()
-        st.session_state[env.key_custom_css] = f"<style>\n{css}\n</style>"
-    return st.session_state[env.key_custom_css]
+        st.session_state[env.state_key_custom_css] = f"<style>\n{css}\n</style>"
+    return st.session_state[env.state_key_custom_css]
 
 
 def inject_css(css: str) -> None:
@@ -40,12 +40,12 @@ def inject_css(css: str) -> None:
 def load_js(path: str | Path | None) -> str:
     if path is None:
         return f"<script>\n</script>"
-    elif env.key_custom_js not in st.session_state.keys():
+    elif env.state_key_custom_js not in st.session_state.keys():
         with open(path) as file:
             js = file.read()
         file.close()
-        st.session_state[env.key_custom_js] = f"<script>\n{js}\n</script>"
-    return st.session_state[env.key_custom_js]
+        st.session_state[env.state_key_custom_js] = f"<script>\n{js}\n</script>"
+    return st.session_state[env.state_key_custom_js]
 
 
 def inject_js(js: str) -> None:
@@ -123,10 +123,10 @@ def current_page() -> str | None:
     }
     if not len(query_params):
         return None
-    elif "page" not in query_params.keys():
+    elif env.key_page_id not in query_params.keys():
         return None
     else:
-        return query_params["page"]
+        return query_params[env.key_page_id]
 
 
 def set_page(page: str) -> None:
