@@ -5,7 +5,11 @@ from streamlit.delta_generator import DeltaGenerator
 from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from sip.config.app import AppConfig
-from sip.defaults import default_not_developed, default_not_accessible
+from sip.defaults import (
+    default_not_developed,
+    default_not_accessible,
+    default_visibility_check,
+)
 from sip import env, backend
 
 
@@ -27,23 +31,24 @@ class Page:
     """
     id: str
     title: Optional[str] = None
-    main: Callable[[Optional[Any]], None] = default_not_developed
-    main_args: list[Any] = list()
-    main_kwargs: dict[str, Any] = dict()
-    show: Optional[Callable[[Optional[Any]], bool]] = None
-    show_args: list[Any] = list()
-    show_kwargs: dict[str, Any] = dict()
-    noaccess: Callable[[Optional[Any]], None] = default_not_accessible
-    noaccess_args: list[Any] = list()
-    noaccess_kwargs: dict[str, Any] = dict()
+    main: Callable[..., None] = default_not_developed
+    main_kwargs: list[str] = list()
+    show: Callable[..., bool] = default_visibility_check
+    show_kwargs: list[str] = list()
+    blocked: Callable[..., None] = default_not_accessible
+    blocked_kwargs: list[str] = list()
+
+    @staticmethod
+    def __collect_session_state_vars(session_state_keys: list[str]) -> dict[str, Any]:
+        return {key: st.session_state[key] for key in session_state_keys}
 
     def __call__(self) -> Any:
         if self.title is not None:
             st.markdown(f"# {self.title}")
         if self.show is None:
-            self.main(*self.main_args, **self.main_kwargs)
+            self.main(**Page.__collect_session_state_vars(self.main_kwargs))
         else:
-            if self.show(*self.show_args, **self.show_kwargs):
-                self.main(*self.main_args, **self.main_kwargs)
+            if self.show(**Page.__collect_session_state_vars(self.show_kwargs)):
+                self.main(**Page.__collect_session_state_vars(self.main_kwargs))
             else:
-                self.noaccess(*self.noaccess_args, **self.noaccess_kwargs)
+                self.blocked(**Page.__collect_session_state_vars(self.blocked_kwargs))
