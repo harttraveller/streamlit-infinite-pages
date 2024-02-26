@@ -1,4 +1,5 @@
 import sys
+import base64
 import streamlit as st
 import streamlit.components.v1 as components
 from pathlib import Path
@@ -19,10 +20,6 @@ def add_session_state_variables(data: dict[str, Any] | set[str]) -> None:
                 st.session_state[key] = val
     else:
         raise ValueError("invalid type passed to 'data' parameter")
-
-
-def load_png(path: str | Path) -> ImageObject:
-    return Image.open(path)
 
 
 def load_css(path: str | Path | None) -> str:
@@ -58,3 +55,49 @@ def inject_js(js: str) -> None:
 def modify_exception_behavior(exception_handler: Callable[[Exception], None]) -> None:
     script_runner = sys.modules["streamlit.runtime.scriptrunner.script_runner"]
     script_runner.handle_uncaught_app_exception = exception_handler  # type:ignore
+
+
+def load_png(path: str | Path) -> ImageObject:
+    return Image.open(path)
+
+
+@st.cache_data
+def base64_of_bin(path: str | Path) -> str:
+    with open(path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+
+def add_logo(
+    path: str,
+    link: str,
+    top: str,
+    bottom: str,
+    left: str,
+    right: str,
+    height: str,
+    position: str,
+    newtab: bool,
+    classes: list[str],
+) -> None:
+    "Add a logo to streamlit sidebar."
+    target = "_blank" if newtab else "_self"
+    markup = (
+        "<a href='%s' target='%s'><img src='data:image/png;base64,%s' style='z-index: 10; position: %s; top: %s; bottom: %s; left: %s; right: %s; height: %s;' class='%s'/></a>"
+        % (
+            link,
+            target,
+            base64_of_bin(path),
+            position,
+            top,
+            bottom,
+            left,
+            right,
+            height,
+            " ".join([c for c in classes]),
+        )
+    )
+    st.markdown(
+        markup,
+        unsafe_allow_html=True,
+    )
