@@ -28,13 +28,14 @@ def collect_session_state_vars(session_state_keys: list[str]) -> dict[str, Any]:
 
 
 def load_css(path: str | Path | None) -> str:
-    if path is None:
-        return "<style>\n</style>"
-    elif st.session_state[env.state_key_custom_css] is None:
-        with open(path) as file:
-            css = file.read()
-        file.close()
-        st.session_state[env.state_key_custom_css] = f"<style>\n{css}\n</style>"
+    if st.session_state[env.state_key_custom_css] is None:
+        if path is None:
+            st.session_state[env.state_key_custom_css] = f"<style>\n</style>"
+        else:
+            with open(path) as file:
+                css = file.read()
+            file.close()
+            st.session_state[env.state_key_custom_css] = f"<style>\n{css}\n</style>"
     return st.session_state[env.state_key_custom_css]
 
 
@@ -43,13 +44,14 @@ def inject_css(css: str) -> None:
 
 
 def load_js(path: str | Path | None) -> str:
-    if path is None:
-        return f"<script>\n</script>"
-    elif env.state_key_custom_js not in st.session_state.keys():
-        with open(path) as file:
-            js = file.read()
-        file.close()
-        st.session_state[env.state_key_custom_js] = f"<script>\n{js}\n</script>"
+    if st.session_state[env.state_key_custom_js] is None:
+        if path is None:
+            st.session_state[env.state_key_custom_js] = f"<script>\n</script>"
+        else:
+            with open(path) as file:
+                js = file.read()
+            file.close()
+            st.session_state[env.state_key_custom_js] = f"<script>\n{js}\n</script>"
     return st.session_state[env.state_key_custom_js]
 
 
