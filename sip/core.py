@@ -93,6 +93,7 @@ class App:
                 key="quicksearch",
                 label_visibility="collapsed",
             )
+        page_id = None
         if page_selection is not None:
             backend.set_page(page_id=page_selection)
             page_id = backend.current_page()
