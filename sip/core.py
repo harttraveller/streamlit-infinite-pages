@@ -20,9 +20,9 @@ class App:
         self.indexed_pages: list[str] = list()
 
     def add(self, page: Page) -> None:
-        self.pages[page.id] = page
+        self.pages[page.name] = page
         if page.is_accessible:
-            self.indexed_pages.append(page.id)
+            self.indexed_pages.append(page.name)
 
     def __set_page_config(self) -> None:
         st.set_page_config(
@@ -85,7 +85,7 @@ class App:
                 st.markdown(auth_info_text)
             if self.config.alpha_sort_pages:
                 self.indexed_pages = sorted(self.indexed_pages)
-            page_selection = st.selectbox(
+            selected_page = st.selectbox(
                 label="quicksearch",
                 options=self.indexed_pages,
                 index=None,
@@ -93,15 +93,14 @@ class App:
                 key="quicksearch",
                 label_visibility="collapsed",
             )
-        page_id = None
-        if page_selection is not None:
-            backend.set_page(page_id=page_selection)
-            page_id = backend.current_page()
-        if page_id is not None:
-            if page_id in self.pages.keys():
-                self.pages[page_id]()
-            else:
-                backend.reset_page()
+        page_name = None
+        if selected_page is not None:
+            backend.set_page(selected_page)
+            page_name = backend.current_page()
+        if page_name is not None:
+            if page_name in self.pages.keys():
+                print("Rendering Page")
+                self.pages[page_name]()
 
     def build(self) -> None:
         self.__set_page_config()
