@@ -33,6 +33,7 @@ class LogoConfig:
 @dataclass
 class AppConfig:
     # main configuration parameters
+    app_version: str
     app_name: str = "Streamlit Infinite Pages"  # * no validation
     app_icon: str = "📚"
     page_layout: Layout = "wide"
