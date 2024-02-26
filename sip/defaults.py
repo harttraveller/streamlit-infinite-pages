@@ -1,11 +1,11 @@
 import streamlit as st
 
 
-def default_unauthorized(*args, **kwargs) -> None:
-    st.error("You are not authorized to access this page.")
+def default_not_accessible(*args, **kwargs) -> None:
+    st.error("This page is not currently accessible.")
 
 
-def default_undeveloped(*args, **kwargs) -> None:
+def default_not_developed(*args, **kwargs) -> None:
     st.error("This page has not yet been developed.")
 
 
