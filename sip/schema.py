@@ -38,22 +38,17 @@ class Page:
     render_blocked: Callable[..., None] = default_render_blocked
     render_blocked_keys: list[str] = list()
 
-    @staticmethod
-    def __collect_session_state_vars(session_state_keys: list[str]) -> dict[str, Any]:
-        "session state variables may change, so this needs to be dynamically generated"
-        return {key: st.session_state[key] for key in session_state_keys}
-
     @property
     def render_main_kwargs(self) -> dict[str, Any]:
-        return Page.__collect_session_state_vars(self.render_main_keys)
+        return backend.collect_session_state_vars(self.render_main_keys)
 
     @property
     def access_check_kwargs(self) -> dict[str, Any]:
-        return Page.__collect_session_state_vars(self.access_check_keys)
+        return backend.collect_session_state_vars(self.access_check_keys)
 
     @property
     def render_blocked_kwargs(self) -> dict[str, Any]:
-        return Page.__collect_session_state_vars(self.render_blocked_keys)
+        return backend.collect_session_state_vars(self.render_blocked_keys)
 
     @property
     def is_accessible(self) -> bool:
