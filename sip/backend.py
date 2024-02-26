@@ -101,3 +101,11 @@ def add_logo(
         markup,
         unsafe_allow_html=True,
     )
+
+
+def format_email(s: str) -> str:
+    if "@" in s:
+        informal_username, domain = s.split("@")
+        return f"**:green[{informal_username}:green[@]:green[{domain}]]**"
+    else:
+        return f"**:red[Not Logged In]**"
