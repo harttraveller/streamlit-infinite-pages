@@ -6,9 +6,9 @@ from typing import Any, Optional, Callable
 from pydantic.dataclasses import dataclass
 from sip.config.app import AppConfig
 from sip.defaults import (
-    default_not_developed,
-    default_not_accessible,
-    default_visibility_check,
+    default_render_main,
+    default_render_blocked,
+    default_access_check,
 )
 from sip import env, backend
 
@@ -31,24 +31,34 @@ class Page:
     """
     id: str
     name: Optional[str] = None
-    main: Callable[..., None] = default_not_developed
-    main_kwargs: list[str] = list()
-    show: Callable[..., bool] = default_visibility_check
-    show_kwargs: list[str] = list()
-    blocked: Callable[..., None] = default_not_accessible
-    blocked_kwargs: list[str] = list()
+    render_main: Callable[..., None] = default_render_main
+    render_main_keys: list[str] = list()
+    access_check: Callable[..., bool] = default_access_check
+    access_check_keys: list[str] = list()
+    render_blocked: Callable[..., None] = default_render_blocked
+    render_blocked_keys: list[str] = list()
 
     @staticmethod
     def __collect_session_state_vars(session_state_keys: list[str]) -> dict[str, Any]:
+        "session state variables may change, so this needs to be dynamically generated"
         return {key: st.session_state[key] for key in session_state_keys}
+
+    @property
+    def render_main_kwargs(self) -> dict[str, Any]:
+        return Page.__collect_session_state_vars(self.render_main_keys)
+
+    @property
+    def access_check_kwargs(self) -> dict[str, Any]:
+        return Page.__collect_session_state_vars(self.access_check_keys)
+
+    @property
+    def render_blocked_kwargs(self) -> dict[str, Any]:
+        return Page.__collect_session_state_vars(self.render_blocked_keys)
 
     def __call__(self) -> Any:
         if self.name is not None:
             st.markdown(f"# {self.name}")
-        if self.show is None:
-            self.main(**Page.__collect_session_state_vars(self.main_kwargs))
+        if self.access_check(**self.access_check_kwargs):
+            self.render_main(**self.render_main_kwargs)
         else:
-            if self.show(**Page.__collect_session_state_vars(self.show_kwargs)):
-                self.main(**Page.__collect_session_state_vars(self.main_kwargs))
-            else:
-                self.blocked(**Page.__collect_session_state_vars(self.blocked_kwargs))
+            self.render_blocked(**self.render_blocked_kwargs)
