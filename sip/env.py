@@ -19,6 +19,7 @@ run_mode_environment_key: str = "SIP_RUN_MODE"
 key_custom_css: str = "custom_css"
 key_custom_js: str = "custom_js"
 key_user_email: str = "user_email"
+key_page_id: str = "id"
 required_session_state_keys: set[str] = {
     key_custom_css,
     key_custom_js,
