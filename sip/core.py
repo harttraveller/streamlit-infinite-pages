@@ -51,9 +51,63 @@ class App:
         js: str = backend.load_js(self.config.custom_js_path)
         backend.inject_js(js)
 
+    def __render_app(self) -> None:
+        with st.sidebar:
+            st.markdown("#")
+            # arbitrary values, worked well enough
+            logo_col, name_col, collapse_col = st.columns([1.8, 9, 2.5])
+            with logo_col:
+                backend.add_logo(
+                    str(self.config.custom_logo_path),
+                    link=self.config.custom_logo_link,
+                    newtab=self.config.custom_logo_newtab,
+                    top=self.config.custom_logo_css_params.top,
+                    bottom=self.config.custom_logo_css_params.bottom,
+                    left=self.config.custom_logo_css_params.left,
+                    right=self.config.custom_logo_css_params.right,
+                    height=self.config.custom_logo_css_params.height,
+                    position=self.config.custom_logo_css_params.position,
+                    classes=self.config.custom_logo_css_params.classes,
+                )
+            with name_col:
+                st.markdown(
+                    (
+                        f"# {self.config.app_name} "
+                        f":grey[{self.config.app_version if self.config.app_version is not None else ''}]"
+                    )
+                )
+                if self.config.authorizer is None:
+                    auth_info_text = ":blue[Authorization Unnecessary]"
+                else:
+                    auth_info_text = backend.format_email(
+                        st.session_state[env.state_key_user_email]
+                    )
+                st.markdown(auth_info_text)
+            if self.config.alpha_sort_pages:
+                self.indexed_pages = sorted(self.indexed_pages)
+            page_selection = st.selectbox(
+                label="quicksearch",
+                options=self.indexed_pages,
+                index=None,
+                placeholder="Press Cmd+K to search pages...",
+                key="quicksearch",
+                label_visibility="collapsed",
+            )
+        if page_selection is not None:
+            backend.set_page(page_id=page_selection)
+            page_id = backend.current_page()
+        if page_id is not None:
+            if page_id in self.pages.keys():
+                self.pages[page_id]()
+            else:
+                backend.reset_page()
+
     def build(self) -> None:
         self.__set_page_config()
         self.__control_exception_traceback()
         self.__initialize_session_state()
         self.__apply_custom_css()
         self.__apply_custom_js()
+        if self.config.authorizer is None:
+            self.__render_app()
+        # else:
