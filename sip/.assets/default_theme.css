@@ -7,6 +7,7 @@ html {
 }
 
 div[data-testid="stSidebarContent"] {
+    margin-top: -4.4rem;
     overflow-y: hidden;
 }
 
@@ -42,9 +43,9 @@ label[data-testid="stWidgetLabel"][aria-hidden="true"] {
 }
 
 
-section[data-testid="stSidebar"] .block-container {
+/* section[data-testid="stSidebar"] .block-container {
     margin-top: -6rem;
-}
+} */
 
 details summary div[data-testid="stMarkdownContainer"] p {
     /* color: lightskyblue; */
@@ -65,25 +66,31 @@ div[data-testid="stSidebarContent"]+div {
 /* can still collapse, but elements get screwed up at certain widths */
 section[data-testid="stSidebar"] {
     width: 460px !important;
+    margin-top: -0.2rem;
 }
 
 div[data-baseweb="popover"] {
-    border: 1px solid #5576F6;
+    border: 1.5px solid #5576F6;
+    border-radius: 0.2rem !important;
 }
 
+ul[data-testid="stVirtualDropdown"] {
+    border-radius: 0.2rem !important;
+}
 
 
 input[aria-label="quicksearch"] {
     /* color: #CF6E34 !important;
     caret-color: #CF6E34  !important; */
-    color: #5576F6 !important;
+    /* color: grey !important; */
     caret-color: #5576F6 !important;
 }
 
 /* change placeholder text color */
 div[data-baseweb="select"] div {
-    /* color: #5576F6 !important; */
     color: grey !important;
+    border-radius: 0.2rem;
+    /* color: grey !important; */
 }
 
 /* ? change input text and caret color placeholder */
@@ -106,7 +113,8 @@ button {
 
 button[data-testid="baseButton-header"] {
     color: red;
-    top: 1.2rem;
+    /* top: 1.2rem; */
+    top: 5.6rem;
     right: 1rem;
     position: relative;
     /* display: none !important; */
