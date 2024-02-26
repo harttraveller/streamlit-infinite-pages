@@ -30,7 +30,7 @@ def collect_session_state_vars(session_state_keys: list[str]) -> dict[str, Any]:
 def load_css(path: str | Path | None) -> str:
     if path is None:
         return "<style>\n</style>"
-    elif env.state_key_custom_css not in st.session_state.keys():
+    elif st.session_state[env.state_key_custom_css] is None:
         with open(path) as file:
             css = file.read()
         file.close()
