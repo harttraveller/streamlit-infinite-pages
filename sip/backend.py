@@ -103,9 +103,9 @@ def add_logo(
     )
 
 
-def format_email(s: str) -> str:
-    if "@" in s:
-        informal_username, domain = s.split("@")
+def format_email(email: str) -> str:
+    if "@" in email:
+        informal_username, domain = email.split("@")
         return f"**:green[{informal_username}:green[@]:green[{domain}]]**"
     else:
         return f"**:red[Not Logged In]**"
