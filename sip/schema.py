@@ -53,8 +53,8 @@ class Page(BaseModel):
         return self.access_check(**self.access_check_kwargs)
 
     def __call__(self) -> Any:
-        # if self.name is not None:
-        #     st.markdown(f"# {self.name}")
+        if self.name is not None:
+            st.markdown(f"# {self.name}")
         if self.is_accessible:
             self.render_main(**self.render_main_kwargs)
         else:
