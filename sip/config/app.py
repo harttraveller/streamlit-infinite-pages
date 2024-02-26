@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Any, Optional, Callable
-from pydantic.dataclasses import dataclass
 from pydantic import BaseModel
 from pydantic import field_validator
 from streamlit.commands.page_config import Layout, InitialSideBarState
@@ -70,14 +69,14 @@ class AppConfig(BaseModel):
     st_cfg_browser_gather_usage_stats: bool = False
     st_cfg_ui_hide_top_bar: bool = True
     st_cfg_theme_base: str = "dark"
-    st_cfg_theme_primary_color: str = ""
-    st_cfg_theme_background_color: str = ""
-    st_cfg_theme_secondary_background_color: str = ""
-    st_cfg_theme_text_color: str = ""
-    st_cfg_theme_font: str = ""
+    st_cfg_theme_primary_color: str = "white"
+    st_cfg_theme_background_color: str = "black"
+    st_cfg_theme_secondary_background_color: str = "grey"
+    st_cfg_theme_text_color: str = "white"
+    st_cfg_theme_font: str = "sans serif"
     st_full_config: Optional[StreamlitConfig] = None
 
-    def __make_streamlit_config(self) -> StreamlitConfig:
+    def make_streamlit_config(self) -> StreamlitConfig:
         return StreamlitConfig(
             logger=LoggerConfig(
                 level=self.st_cfg_logger_level,
@@ -117,14 +116,14 @@ class AppConfig(BaseModel):
             ),
         )
 
-    @field_validator("st_full_config")
-    def __validate_st_full_config(
-        cls, st_full_config: StreamlitConfig | None
-    ) -> StreamlitConfig:
-        if st_full_config is None:
-            cfg = cls.__make_streamlit_config()
-        cfg.save(overwrite=True)
-        return cfg
+    # @field_validator("st_full_config")
+    # def __validate_st_full_config(
+    #     cls, st_full_config: StreamlitConfig | None
+    # ) -> StreamlitConfig:
+    #     if st_full_config is None:
+    #         cfg = cls._make_streamlit_config()
+    #     cfg.save(overwrite=True)
+    #     return cfg
 
     @field_validator("app_icon")
     def __validate_app_icon(cls, app_icon: str) -> str:

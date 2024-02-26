@@ -5,7 +5,7 @@ from streamlit.delta_generator import DeltaGenerator
 from typing import Any, Optional, Callable
 from pydantic import BaseModel
 from sip.config.app import AppConfig
-from sip.defaults import (
+from sip.utils.defaults import (
     default_render_main,
     default_render_blocked,
     default_access_check,
