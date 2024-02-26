@@ -75,6 +75,7 @@ class AppConfig(BaseModel):
     st_cfg_theme_secondary_background_color: str = ""
     st_cfg_theme_text_color: str = ""
     st_cfg_theme_font: str = ""
+    st_full_config: Optional[StreamlitConfig] = None
 
     def __make_streamlit_config(self) -> StreamlitConfig:
         return StreamlitConfig(
@@ -116,9 +117,14 @@ class AppConfig(BaseModel):
             ),
         )
 
-    def __post_init__(self) -> None:
-        self.streamlit_config = self.__make_streamlit_config()
-        self.streamlit_config.save(overwrite=True)
+    @field_validator("st_full_config")
+    def __validate_st_full_config(
+        cls, st_full_config: StreamlitConfig | None
+    ) -> StreamlitConfig:
+        if st_full_config is None:
+            cfg = cls.__make_streamlit_config()
+        cfg.save(overwrite=True)
+        return cfg
 
     @field_validator("app_icon")
     def __validate_app_icon(cls, app_icon: str) -> str:
