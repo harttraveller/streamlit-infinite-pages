@@ -1,28 +1,4 @@
-"""
-Source: https://docs.streamlit.io/library/advanced-features/configuration
-
-You can run `streamlit config show` in an environment with streamlit
-installed to see the source of the docstrings.
-
-Additionally, some configuration options are hidden, and the docs can only
-be found by running: `streamlit run --help`.
-
-This file contains pydantic class for streamlit config file, which can be
-modified and easily saved to the ~/.streamlit/config.toml location.
-
-The default pydantic values are the default values from the docs, however
-the 'create' function at the bottom only includes parameters I find useful,
-along with defaults I prefer.
-
-Comments are included inline describing the parameters, because some of them
-are somewhat confusing. For instance, when 'showErrorDetails' is False,
-that doesn't actually hide the error details for whatever reason, it just
-reduces the amount of information available in the traceback - hence, why
-a separate higher level configuration parameter has been added to manually
-hide the traceback.
-
-"""
-
+import sys
 import toml
 from pathlib import Path
 from typing import Optional, Literal
@@ -49,9 +25,65 @@ def skip_newsletter() -> None:
         file.close()
 
 
+def run_command(
+    app: str | Path,
+    host: str,
+    port: int,
+    browser: bool,
+) -> list[str]:
+    """
+    Create a run command for a streamlit app.
+
+    Notes:
+
+    It uses `sys.executable` to ensure
+    that the python executable with streamlit and this package installed is the
+    one to run the app.
+
+    Example:
+
+    ```python
+    import subprocess
+    from sip.streamlit import run_command
+
+    subprocess.run(run_command(**parameters))
+    ```
+    """
+    return [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+    ]
+
+
 # * NOTE *
 # Full config is not included in this version, as would take time and is of limited use.
 
+"""
+Source: https://docs.streamlit.io/library/advanced-features/configuration
+
+You can run `streamlit config show` in an environment with streamlit
+installed to see the source of the docstrings.
+
+Additionally, some configuration options are hidden, and the docs can only
+be found by running: `streamlit run --help`.
+
+This file contains pydantic class for streamlit config file, which can be
+modified and easily saved to the ~/.streamlit/config.toml location.
+
+The default pydantic values are the default values from the docs, however
+the 'create' function at the bottom only includes parameters I find useful,
+along with defaults I prefer.
+
+Comments are included inline describing the parameters, because some of them
+are somewhat confusing. For instance, when 'showErrorDetails' is False,
+that doesn't actually hide the error details for whatever reason, it just
+reduces the amount of information available in the traceback - hence, why
+a separate higher level configuration parameter has been added to manually
+hide the traceback.
+
+"""
 
 # class StreamlitConfig(BaseModel):
 #     """
