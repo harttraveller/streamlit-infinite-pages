@@ -35,7 +35,7 @@ path_streamlit_config: Path = path_streamlit / "config.toml"
 path_streamlit_credentials: Path = path_streamlit / "credentials.toml"
 
 
-def skip_streamlit_newsletter_request() -> None:
+def skip_newsletter() -> None:
     """
     Normally when you start a streamlit app for the first time, it will prompt
     you for their email, to subscribe to their newsletter. This function checks
