@@ -1,7 +1,12 @@
+import sys
 import toml
+import subprocess
 from pathlib import Path
+from typing import Any
+from pydantic import BaseModel, model_validator, field_validator
 
-def skip_streamlit_newsletter_request() -> None:
+
+def skip() -> None:
     """
     Normally when you start a streamlit app for the first time, it will prompt
     you for their email, to subscribe to their newsletter. This function checks
@@ -15,3 +20,25 @@ def skip_streamlit_newsletter_request() -> None:
         with open(streamlit_credentials_file, "w") as file:
             toml.dump({"general": {"email": ""}}, file)
         file.close()
+
+
+class Command(BaseModel):
+    app: str
+
+    @model_validator(mode="before")
+    def __prevalidate(self, data: Any) -> Any: ...
+
+    def build(self) -> list[str]:
+        """
+        The output streamlit CLI command to start the app with the associated parameters.
+        """
+        return [
+            sys.executable,
+            "-m",
+            "streamlit",
+            "run",
+        ]
+
+
+def start(command: Command) -> None:
+    subprocess.run(str(command))
