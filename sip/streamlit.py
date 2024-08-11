@@ -25,7 +25,7 @@ def skip_newsletter() -> None:
         file.close()
 
 
-def run_command(
+def run(
     app: str | Path,
     host: str,
     port: int,
@@ -44,9 +44,9 @@ def run_command(
 
     ```python
     import subprocess
-    from sip.streamlit import run_command
+    from sip import streamlit
 
-    subprocess.run(run_command(**parameters))
+    subprocess.run(streamlit.run(**parameters))
     ```
     """
     return [
