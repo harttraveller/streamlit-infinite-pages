@@ -25,8 +25,8 @@ hide the traceback.
 
 import toml
 from pathlib import Path
-from typing import Optional
-from pydantic import BaseModel, field_validator
+from typing import Optional, Literal
+from pydantic import BaseModel, Field, field_validator
 
 
 path_home: Path = Path.home()
@@ -47,6 +47,24 @@ def skip_newsletter() -> None:
         with open(path_streamlit_credentials, "w") as file:
             toml.dump({"general": {"email": ""}}, file)
         file.close()
+
+
+# * NOTE *
+# Full config is not included in this version, as would take time and is of limited use.
+
+
+# class StreamlitConfig(BaseModel):
+#     """
+#     global_disable_widget_state_duplication_warning (bool): --global.disableWidgetStateDuplicationWarning
+#     By default, Streamlit displays a warning when a user sets both a widget default value
+#     in the function defining the widget and a widget value via the widget's key in `st.session_state`.
+
+
+#     """
+
+#     global_disable_widget_state_duplication_warning: bool = Field(
+#         default=False, alias="--global.disableWidgetStateDuplicationWarning"
+#     )
 
 
 # # ! ignored as 'global' is python keyword; adding attribute causes issues
