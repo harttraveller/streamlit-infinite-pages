@@ -1,5 +1,6 @@
 import sys
 import toml
+import subprocess
 from pathlib import Path
 from typing import Optional, Literal
 from pydantic import BaseModel, Field, field_validator
@@ -30,7 +31,8 @@ def run(
     host: str,
     port: int,
     browser: bool,
-) -> list[str]:
+    execute: bool = False,
+) -> list[str] | None:
     """
     Create a run command for a streamlit app.
 
@@ -49,12 +51,17 @@ def run(
     subprocess.run(streamlit.run(**parameters))
     ```
     """
-    return [
+    command = [
         sys.executable,
         "-m",
         "streamlit",
         "run",
     ]
+    if not execute:
+        return command
+    else:
+        skip_newsletter()
+        subprocess.run(command)
 
 
 # * NOTE *
