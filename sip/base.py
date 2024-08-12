@@ -1,12 +1,36 @@
 from __future__ import annotations
 
 import sys
+import base64
 import streamlit as st
+import streamlit.components.v1 as components
 from pathlib import Path
-from typing import Optional, Callable, Any
-from pydantic import BaseModel
+from typing import Optional, Callable, Any, Self
+from pydantic import BaseModel, model_validator
 from dataclasses import dataclass
 from . import constant
+
+# ! utility functions
+
+
+# ! page model
+
+
+class Page(BaseModel):
+    name: str
+    renderer: Callable[[], None]
+    authorizer: Callable[[], bool] = lambda: True
+
+    @property
+    def id(self) -> str:
+        return self.name
+
+    # @property
+    # def id(self) -> str:
+    #     return "".join([c.lower() if c.isalnum() else "_" for c in self.name.lower()])
+
+
+# ! configuration models
 
 
 class Authentication(BaseModel):
@@ -23,17 +47,36 @@ class Traceback(BaseModel):
     handler: Callable[[Exception], None] = lambda exc: None
 
 
+class LogoCSS(BaseModel):
+    top: str = "0.3rem"
+    bottom: str = "auto"
+    left: str = "0.2rem"
+    right: str = "auto"
+    height: str = "2.75rem"
+    position: str = "absolute"
+    classes: list[str] = ["logo"]
+
+
 class Assets(BaseModel):
-    logo: Path = constant.path_default_logo
-    css: Path = constant.path_default_css
     js: Path = constant.path_default_js
+    css: Path = constant.path_default_css
+    logo: Path = constant.path_default_logo
+    logo_css: LogoCSS = LogoCSS()
+
+    @model_validator(mode="after")
+    def __exists(self) -> Self:
+        for path in [self.logo, self.css, self.js]:
+            if not path.exists():
+                raise FileNotFoundError(str(path))
+        return self
 
 
-class Page:
-    id: str
-    name: str
-    main: Callable
-    show: Callable
+class State(BaseModel):
+    keys: set[str] = set()
+    pairs: dict[str, Any] = dict()
+
+
+# ! main app class
 
 
 class App:
@@ -42,7 +85,7 @@ class App:
         name: str,
         icon: str,
         version: str = str(),
-        state: dict[str, Any] = dict(),
+        state: State = State(),
         assets: Assets = Assets(),
         traceback: Traceback = Traceback(),
         authentication: Authentication = Authentication(),
@@ -63,9 +106,33 @@ class App:
         self.__init_page_config()
         self.__init_traceback_control()
         self.__init_session_state()
-        self.__init_custom_css()
-        self.__init_custom_js()
+        self.__inject_css()
+        self.__inject_js()
 
+    # ! utilities
+
+    @st.cache_data
+    def __load_css(self) -> str:
+        with open(self.assets.css) as file:
+            css = file.read()
+        file.close()
+        return f"<style>\n{css}</style>"
+
+    @st.cache_data
+    def __load_js(self) -> str:
+        with open(self.assets.js) as file:
+            js = file.read()
+        file.close()
+        return f"<script>\n{js}</script>"
+
+    @st.cache_data
+    def __load_logo(self) -> str:
+        """Load logo as base64"""
+        with open(self.assets.logo, "rb") as file:
+            data = file.read()
+        return base64.b64encode(data).decode()
+
+    # ! these run before app is built
     def __init_page_config(self) -> None:
         """
         - This needs to be called first, otherwise it wouldn't be split out.
@@ -103,16 +170,20 @@ class App:
 
     def __init_session_state(self) -> None:
         """"""
-        ...
+        for key in self.state.keys:
+            if not (key in st.session_state.keys()):
+                st.session_state[key] = None
+        for key, val in self.state.pairs.items():
+            if not (key in st.session_state.keys()):
+                st.session_state[key] = val
 
-    def __init_custom_css(self) -> None: ...
+    def __inject_css(self) -> None:
+        st.markdown(self.__load_css(), unsafe_allow_html=True)
 
-    def __init_custom_js(self) -> None: ...
+    def __inject_js(self) -> None:
+        components.html(self.__load_js(), height=0, width=0)
 
-    def add(self, page: Page) -> None:
-        self.pages[page.id] = page
-
-    def __check_auth(self) -> None:
+    def __authenticate(self) -> None:
         if not (self.authentication.key in st.session_state.keys()):
             st.session_state[self.authentication.key] = self.authentication.handler()
             st.rerun()
@@ -120,8 +191,75 @@ class App:
             st.session_state[self.authentication.key] = self.authentication.handler()
             st.rerun()
 
-    def __render_app(self) -> None: ...
+    # ! this stage allows the user to add pages
 
-    def start(self) -> None:
-        self.__check_auth()
-        self.__render_app()
+    def add(self, page: Page) -> None:
+        if page.authorizer():
+            self.pages[page.name] = page
+
+    # ! utilities when actually building app
+
+    def __add_logo(self) -> None:
+        markup = (
+            "<img src='data:image/png;base64,%s' style='z-index: 10; position: %s; top: %s; bottom: %s; left: %s; right: %s; height: %s;' class='%s'/>"
+            % (
+                self.__load_logo(),
+                self.assets.logo_css.position,
+                self.assets.logo_css.top,
+                self.assets.logo_css.bottom,
+                self.assets.logo_css.left,
+                self.assets.logo_css.right,
+                self.assets.logo_css.height,
+                " ".join([c for c in self.assets.logo_css.classes]),
+            )
+        )
+        st.markdown(
+            markup,
+            unsafe_allow_html=True,
+        )
+
+    def __render_page(self, name: str) -> None:
+        if self.pages[name].authorizer():
+            self.pages[name].renderer()
+        else:
+            st.error("Unauthorized")
+
+    @property
+    def url_page(self) -> str:
+        return ""  # todo
+
+    def set_url_page(self, id: str) -> None: ...
+
+    # ! function to build app given config, and successful authorization
+
+    def run(self, home: str) -> None:
+        """
+        Args:
+            home (str): id of home/index page to start on
+        """
+        # double check authenticated, probably redundant, may remove later
+        if not st.session_state[self.authentication.key]:
+            self.__authenticate()
+        else:
+            with st.sidebar:
+                # arbitrary values, worked well enough
+                logo_col, name_col, collapse_col = st.columns([1.8, 9, 2.5])
+                with logo_col:
+                    self.__add_logo()
+                with name_col:
+                    st.markdown(f"# {self.name} :grey[{self.version}]")
+                selected_page = st.selectbox(
+                    label="quicksearch",
+                    options=list(self.pages.keys()),
+                    index=None,
+                    placeholder="Press Cmd+K to search pages...",
+                    key="quicksearch",
+                    label_visibility="collapsed",
+                )
+            target_page = None
+            if not (selected_page is None):
+                self.set_url_page(selected_page)
+                target_page = selected_page
+            else:
+                target_page = self.url_page
+            self.__render_page(target_page)
