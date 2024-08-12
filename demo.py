@@ -1,5 +1,5 @@
 import streamlit as st
-from sip.core import App, Page, Authentication, TracebackConfiguration
+from sip.core import App, Page
 
 
 def other_page():
@@ -22,15 +22,10 @@ def hidden_page():
     st.write("This shouldn't be visible.")
 
 
-trace = TracebackConfiguration(
-    disable=True,
-    handler=error_page_handler,
-)
 app = App(
     app_name="Demo App",
     app_icon="D",
-    version="0.0.0",
-    traceback_handler=trace,
+    traceback_handler=error_page_handler,
 )
 
 app.add(

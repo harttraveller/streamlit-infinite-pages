@@ -1,14 +1,12 @@
-from __future__ import annotations
-
 import sys
 import streamlit as st
-from pathlib import Path
-from typing import Optional, Callable, Any, Self
-from pydantic import BaseModel
+from typing import Optional, Callable
+from dataclasses import dataclass
 from streamlit.commands.page_config import Layout, InitialSideBarState
 
 
-class Page(BaseModel):
+@dataclass
+class Page:
     name: str
     renderer: Callable[[], None]
     authorizer: Callable[[], bool] = lambda: True
@@ -75,8 +73,6 @@ class App:
             st.session_state[self.auth_state_key] = self.authentication_handler()
             st.rerun()
 
-    # # ! this stage allows the user to add pages
-
     def add(self, page: Page | list[Page]) -> None:
         if isinstance(page, list):
             for p in page:
@@ -85,9 +81,8 @@ class App:
             if page.authorizer():
                 self.pages[page.name] = page
 
-    # # ! function to build app given config, and successful authorization
-
     def run(self, index: str) -> None:
+        self.__authenticate()
         with st.sidebar:
             selected_page = st.selectbox(
                 label="quicksearch",
