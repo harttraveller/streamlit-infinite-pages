@@ -23,8 +23,8 @@ def hidden_page():
 
 
 app = App(
-    app_name="Demo App",
-    app_icon="D",
+    name="Demo App",
+    icon="D",
     traceback_handler=error_page_handler,
 )
 

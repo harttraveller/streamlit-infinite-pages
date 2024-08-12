@@ -23,6 +23,12 @@ pip install streamlit-infinite-pages
 
 ## Tutorial
 
+### Extremely simple app
+
+```python
+from sip import App, Page
+```
+
 
 
 

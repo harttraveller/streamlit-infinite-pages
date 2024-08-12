@@ -15,8 +15,8 @@ class Page:
 class App:
     def __init__(
         self,
-        app_name: str,
-        app_icon: str,
+        name: str,
+        icon: str,
         page_layout: Layout = "wide",
         initial_sidebar_state: InitialSideBarState = "auto",
         initial_session_state: dict = dict(),
@@ -24,8 +24,8 @@ class App:
         traceback_handler: Optional[Callable[[Exception], None]] = None,
     ) -> None:
         # app config
-        self.app_name = app_name
-        self.app_icon = app_icon
+        self.app_name = name
+        self.app_icon = icon
         self.page_layout: Layout = page_layout
         self.initial_sidebar_state: InitialSideBarState = initial_sidebar_state
         self.initial_session_state = initial_session_state
