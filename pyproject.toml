@@ -6,7 +6,6 @@ authors = ["Hart Traveller <ruling_fiction.0b@icloud.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "sip" }]
-include = ["sip/.assets/**/*"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
