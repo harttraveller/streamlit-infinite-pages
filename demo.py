@@ -1,19 +1,47 @@
 import streamlit as st
-from sip.base import App, Page
+from sip.core import App, Page, Authentication, TracebackConfiguration
 
 
-def test_page():
-    st.write("Test Page")
+def other_page():
+    st.write("Other Page")
 
 
+def home_page():
+    st.write("Home Page")
+
+
+def error_page():
+    st.write(1 / 0)
+
+
+def error_page_handler(e):
+    st.toast(":red[Server Error]")
+
+
+def hidden_page():
+    st.write("This shouldn't be visible.")
+
+
+trace = TracebackConfiguration(
+    disable=True,
+    handler=error_page_handler,
+)
 app = App(
-    name="Demo App",
-    icon="D",
+    app_name="Demo App",
+    app_icon="D",
     version="0.0.0",
+    traceback_handler=trace,
 )
 
 app.add(
-    Page(name="test", renderer=test_page),
+    [
+        Page(name="Home", renderer=home_page),
+        Page(name="Other", renderer=other_page),
+        Page(name="Error", renderer=error_page),
+        Page(name="Hidden", renderer=hidden_page, authorizer=lambda: False),
+    ]
 )
 
-app.run(home="test")
+app.run(index="Home")
+
+# st.write(st.query_params.get("page"))
