@@ -1,32 +1,22 @@
 import streamlit as st
 from sip import App, Page
-from loguru import logger
 
 
-def home_page() -> None:
-    st.markdown("# Home")
+def zero_division_error() -> None:
+    st.write(1 / 0)
 
 
-# * should return true if authenticated, else false
-# * you can store use information in the session state
-def authentication_handler() -> None:
-    super_secret_password = "qwerty"
-    password_input = st.text_input(label="Enter password:", type="password")
-    if password_input:
-        if password_input == super_secret_password:
-            st.session_state["authenticated"] = True
-            st.rerun()
-        else:
-            st.toast("Incorrect password")
-            st.session_state["authenticated"] = False
+def hidden_traceback(e: Exception) -> None:
+    st.toast(":red[Error]")
 
 
 app = App(
     name="Demo App",
     icon="🚀",
-    authentication_handler=authentication_handler,
+    traceback_handler=hidden_traceback,
 )
 
-app.add(Page(name="Home", renderer=home_page))
+app.add(Page(name="Error", main=zero_division_error))
 
-app.run(index="Home")
+
+app.run(index="Error")

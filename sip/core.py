@@ -8,8 +8,8 @@ from streamlit.commands.page_config import Layout, InitialSideBarState
 @dataclass
 class Page:
     name: str
-    renderer: Callable[[], None]
-    authorizer: Callable[[], bool] = lambda: True
+    main: Callable[[], None]
+    accessible: Callable[[], bool] = lambda: True
 
 
 class App:
@@ -20,8 +20,8 @@ class App:
         page_layout: Layout = "wide",
         initial_sidebar_state: InitialSideBarState = "auto",
         initial_session_state: dict = dict(),
-        authentication_handler: Callable[[], None] = lambda: None,
-        authentication_key: str = "authenticated",
+        auth_handler: Callable[[], bool | None] = lambda: True,
+        auth_key: str = "authenticated",
         traceback_handler: Optional[Callable[[Exception], None]] = None,
     ) -> None:
         # app config
@@ -31,8 +31,8 @@ class App:
         self.initial_sidebar_state: InitialSideBarState = initial_sidebar_state
         self.initial_session_state = initial_session_state
         self.traceback_handler = traceback_handler
-        self.authentication_handler = authentication_handler
-        self.authentication_key = authentication_key
+        self.auth_handler = auth_handler
+        self.auth_key = auth_key
 
         self.pages: dict[str, Page] = dict()
 
@@ -63,8 +63,8 @@ class App:
             st_exec.handle_uncaught_app_exception = self.traceback_handler  # type: ignore
 
     def __init_session_state(self) -> None:
-        if not (self.authentication_key in st.session_state):
-            st.session_state[self.authentication_key] = False
+        if not (self.auth_key in st.session_state):
+            st.session_state[self.auth_key] = False
         for key, val in self.initial_session_state.items():
             if not (key in st.session_state.keys()):
                 st.session_state[key] = val
@@ -74,17 +74,28 @@ class App:
             for p in page:
                 self.add(p)
         else:
-            if page.authorizer():
-                self.pages[page.name] = page
+            self.pages[page.name] = page
+
+    def __authenticate(self) -> None:
+        auth_result = self.auth_handler()
+        if not (auth_result is None):
+            st.session_state[self.auth_key] = auth_result
+            if st.session_state[self.auth_key]:
+                st.rerun()
+            else:
+                st.toast(":red[Authentication Failed]")
 
     def run(self, index: str) -> None:
-        if not st.session_state[self.authentication_key]:
-            self.authentication_handler()
+        if not st.session_state[self.auth_key]:
+            self.__authenticate()
         else:
+            accessible_pages = [
+                page.name for page in self.pages.values() if page.accessible()
+            ]
             with st.sidebar:
                 selected_page = st.selectbox(
                     label="quicksearch",
-                    options=list(self.pages.keys()),
+                    options=accessible_pages,
                     index=None,
                     placeholder="Go to page...",
                     key="quicksearch",
@@ -99,6 +110,9 @@ class App:
                 if url_page:
                     target_page = url_page
             if target_page in self.pages.keys():
-                self.pages[target_page].renderer()
+                if self.pages[target_page].accessible():
+                    self.pages[target_page].main()
+                else:
+                    st.error("Page does not exist, or user is unauthorized.")
             else:
                 st.error("Page does not exist, or user is unauthorized.")
