@@ -13,6 +13,30 @@ from . import constant
 # ! utility functions
 
 
+@st.cache_data
+def _load_css(path: Path) -> str:
+    with open(path) as file:
+        css = file.read()
+    file.close()
+    return f"<style>\n{css}</style>"
+
+
+@st.cache_data
+def _load_js(path: Path) -> str:
+    with open(path) as file:
+        js = file.read()
+    file.close()
+    return f"<script>\n{js}</script>"
+
+
+@st.cache_data
+def _load_logo(path: Path) -> str:
+    """Load logo as base64"""
+    with open(path, "rb") as file:
+        data = file.read()
+    return base64.b64encode(data).decode()
+
+
 # ! page model
 
 
@@ -47,25 +71,30 @@ class Traceback(BaseModel):
     handler: Callable[[Exception], None] = lambda exc: None
 
 
-class LogoCSS(BaseModel):
+class Logo(BaseModel):
+    path: Path = constant.path_default_logo
     top: str = "0.3rem"
     bottom: str = "auto"
     left: str = "0.2rem"
     right: str = "auto"
-    height: str = "2.75rem"
+    height: str = "30px"
     position: str = "absolute"
     classes: list[str] = ["logo"]
+
+    @model_validator(mode="after")
+    def __exists(self) -> Self:
+        if not self.path.exists():
+            raise FileNotFoundError(str(self.path))
+        return self
 
 
 class Assets(BaseModel):
     js: Path = constant.path_default_js
     css: Path = constant.path_default_css
-    logo: Path = constant.path_default_logo
-    logo_css: LogoCSS = LogoCSS()
 
     @model_validator(mode="after")
     def __exists(self) -> Self:
-        for path in [self.logo, self.css, self.js]:
+        for path in [self.css, self.js]:
             if not path.exists():
                 raise FileNotFoundError(str(path))
         return self
@@ -84,20 +113,22 @@ class App:
         self,
         name: str,
         icon: str,
+        logo: Logo = Logo(),
         version: str = str(),
         state: State = State(),
-        assets: Assets = Assets(),
         traceback: Traceback = Traceback(),
         authentication: Authentication = Authentication(),
     ) -> None:
         # app config
         self.name = name
         self.icon = icon
+        self.logo = logo
         self.version = version
         self.state = state
-        self.assets = assets
         self.traceback = traceback
         self.authentication = authentication
+        # todo: make customizable
+        self.assets = Assets()
 
         # internal state
         self.pages: dict[str, Page] = dict()
@@ -108,29 +139,6 @@ class App:
         self.__init_session_state()
         self.__inject_css()
         self.__inject_js()
-
-    # ! utilities
-
-    @st.cache_data
-    def __load_css(self) -> str:
-        with open(self.assets.css) as file:
-            css = file.read()
-        file.close()
-        return f"<style>\n{css}</style>"
-
-    @st.cache_data
-    def __load_js(self) -> str:
-        with open(self.assets.js) as file:
-            js = file.read()
-        file.close()
-        return f"<script>\n{js}</script>"
-
-    @st.cache_data
-    def __load_logo(self) -> str:
-        """Load logo as base64"""
-        with open(self.assets.logo, "rb") as file:
-            data = file.read()
-        return base64.b64encode(data).decode()
 
     # ! these run before app is built
     def __init_page_config(self) -> None:
@@ -170,6 +178,8 @@ class App:
 
     def __init_session_state(self) -> None:
         """"""
+        if not self.authentication.key in st.session_state:
+            st.session_state[self.authentication.key] = False
         for key in self.state.keys:
             if not (key in st.session_state.keys()):
                 st.session_state[key] = None
@@ -178,16 +188,13 @@ class App:
                 st.session_state[key] = val
 
     def __inject_css(self) -> None:
-        st.markdown(self.__load_css(), unsafe_allow_html=True)
+        st.markdown(_load_css(self.assets.css), unsafe_allow_html=True)
 
     def __inject_js(self) -> None:
-        components.html(self.__load_js(), height=0, width=0)
+        components.html(_load_js(self.assets.js), height=0, width=0)
 
     def __authenticate(self) -> None:
-        if not (self.authentication.key in st.session_state.keys()):
-            st.session_state[self.authentication.key] = self.authentication.handler()
-            st.rerun()
-        elif not st.session_state[self.authentication.key]:
+        if not st.session_state[self.authentication.key]:
             st.session_state[self.authentication.key] = self.authentication.handler()
             st.rerun()
 
@@ -203,14 +210,14 @@ class App:
         markup = (
             "<img src='data:image/png;base64,%s' style='z-index: 10; position: %s; top: %s; bottom: %s; left: %s; right: %s; height: %s;' class='%s'/>"
             % (
-                self.__load_logo(),
-                self.assets.logo_css.position,
-                self.assets.logo_css.top,
-                self.assets.logo_css.bottom,
-                self.assets.logo_css.left,
-                self.assets.logo_css.right,
-                self.assets.logo_css.height,
-                " ".join([c for c in self.assets.logo_css.classes]),
+                _load_logo(self.logo.path),
+                self.logo.position,
+                self.logo.top,
+                self.logo.bottom,
+                self.logo.left,
+                self.logo.right,
+                self.logo.height,
+                " ".join([c for c in self.logo.classes]),
             )
         )
         st.markdown(
@@ -257,9 +264,9 @@ class App:
                     label_visibility="collapsed",
                 )
             target_page = None
-            if not (selected_page is None):
-                self.set_url_page(selected_page)
-                target_page = selected_page
-            else:
-                target_page = self.url_page
-            self.__render_page(target_page)
+            # if not (selected_page is None)
+            #     self.set_url_page(selected_page)
+            #     target_page = selected_page
+            # else:
+            #     target_page = self.url_page
+            # self.__render_page(target_page)
