@@ -20,7 +20,8 @@ class App:
         page_layout: Layout = "wide",
         initial_sidebar_state: InitialSideBarState = "auto",
         initial_session_state: dict = dict(),
-        authentication_handler: Callable[[], bool] = lambda: True,
+        authentication_handler: Callable[[], None] = lambda: None,
+        authentication_key: str = "authenticated",
         traceback_handler: Optional[Callable[[Exception], None]] = None,
     ) -> None:
         # app config
@@ -31,9 +32,9 @@ class App:
         self.initial_session_state = initial_session_state
         self.traceback_handler = traceback_handler
         self.authentication_handler = authentication_handler
+        self.authentication_key = authentication_key
 
         self.pages: dict[str, Page] = dict()
-        self.auth_state_key = "_authenticated_"
 
         # app initialization
         self.__init_page_config()
@@ -62,16 +63,11 @@ class App:
             st_exec.handle_uncaught_app_exception = self.traceback_handler  # type: ignore
 
     def __init_session_state(self) -> None:
-        if not (self.auth_state_key in st.session_state):
-            st.session_state[self.auth_state_key] = False
+        if not (self.authentication_key in st.session_state):
+            st.session_state[self.authentication_key] = False
         for key, val in self.initial_session_state.items():
             if not (key in st.session_state.keys()):
                 st.session_state[key] = val
-
-    def __authenticate(self) -> None:
-        if not st.session_state[self.auth_state_key]:
-            st.session_state[self.auth_state_key] = self.authentication_handler()
-            st.rerun()
 
     def add(self, page: Page | list[Page]) -> None:
         if isinstance(page, list):
@@ -82,25 +78,27 @@ class App:
                 self.pages[page.name] = page
 
     def run(self, index: str) -> None:
-        self.__authenticate()
-        with st.sidebar:
-            selected_page = st.selectbox(
-                label="quicksearch",
-                options=list(self.pages.keys()),
-                index=None,
-                placeholder="Go to page...",
-                key="quicksearch",
-                label_visibility="collapsed",
-            )
-        target_page = index
-        if selected_page:
-            st.query_params["page"] = selected_page
-            target_page = selected_page
+        if not st.session_state[self.authentication_key]:
+            self.authentication_handler()
         else:
-            url_page = st.query_params.get("page")
-            if url_page:
-                target_page = url_page
-        if target_page in self.pages.keys():
-            self.pages[target_page].renderer()
-        else:
-            st.error("Page does not exist, or user is unauthorized.")
+            with st.sidebar:
+                selected_page = st.selectbox(
+                    label="quicksearch",
+                    options=list(self.pages.keys()),
+                    index=None,
+                    placeholder="Go to page...",
+                    key="quicksearch",
+                    label_visibility="collapsed",
+                )
+            target_page = index
+            if selected_page:
+                st.query_params["page"] = selected_page
+                target_page = selected_page
+            else:
+                url_page = st.query_params.get("page")
+                if url_page:
+                    target_page = url_page
+            if target_page in self.pages.keys():
+                self.pages[target_page].renderer()
+            else:
+                st.error("Page does not exist, or user is unauthorized.")

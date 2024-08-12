@@ -26,10 +26,54 @@ pip install streamlit-infinite-pages
 ### Extremely simple app
 
 ```python
+import streamlit as st
 from sip import App, Page
+
+
+def home_page():
+    st.markdown("# Home")
+
+
+def other_page():
+    st.markdown("# Other")
+
+
+app = App(name="Demo App", icon="🚀")
+
+app.add(Page(name="Home", renderer=home_page))
+
+app.add(Page(name="Home", renderer=other_page))
+
+app.run(index="Home")
+
 ```
 
+### Add authentication flow
 
+```python
+import streamlit as st
+from sip import App, Page
+
+def home_page() -> None:
+    st.markdown("# Home")
+
+# * should return true if authenticated, else false
+# * you can store use information in the session state
+def authentication_handler() -> bool:
+    super_secret_password = "qwerty"
+    password_input = st.text_input
+
+app = App(
+    name="Demo App",
+    icon="🚀"
+)
+
+app.add(
+    Page(name="Home", renderer=home_page)
+)
+
+app.run(index="Home")
+```
 
 
 
