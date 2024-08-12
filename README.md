@@ -2,7 +2,11 @@
 
 Streamlit wrapper to make creating multi page apps easier.
 
+## Install
 
+```sh
+pip install streamlit-infinite-pages
+```
 
 ## Features
 
@@ -15,6 +19,12 @@ Streamlit wrapper to make creating multi page apps easier.
 - [ ] Keyboard shortcuts
 - [ ] Custom CSS / JS
 - [ ] Add various stateful elements
+
+
+## Tutorial
+
+
+
 
 
 <!--

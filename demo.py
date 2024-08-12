@@ -38,5 +38,3 @@ app.add(
 )
 
 app.run(index="Home")
-
-# st.write(st.query_params.get("page"))
